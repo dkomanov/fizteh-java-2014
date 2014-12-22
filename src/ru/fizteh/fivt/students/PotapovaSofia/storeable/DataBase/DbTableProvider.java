@@ -1,4 +1,4 @@
-package ru.fizteh.fivt.students.PotapovaSofia.storeable;
+package ru.fizteh.fivt.students.PotapovaSofia.storeable.DataBase;
 
 import ru.fizteh.fivt.storage.structured.Table;
 import ru.fizteh.fivt.storage.structured.TableProvider;
@@ -13,8 +13,51 @@ import java.lang.reflect.Method;
 import java.nio.file.*;
 import java.text.ParseException;
 import java.util.*;
+import java.util.function.Function;
 
 public class DbTableProvider implements TableProvider {
+
+    public static final String ILLEGAL_TABLE_NAME_PATTERN = ".*\\.|\\..*|.*(/|\\\\).*";
+    public static final String IGNORE_SYMBOLS_IN_DOUBLE_QUOTES_REGEX = "(?=([^\"]*\"[^\"]*\")*[^\"]*$)";
+    public static final String ENCODING = "UTF-8";
+    public static final String TABLE_SIGNATURE = "signature.tsv";
+
+    public static final Map<String, Class> AVAILABLE_TYPES = new HashMap<>();
+    public static final Map<Class, String> AVAILABLE_CLASSES = new HashMap<>();
+    public static final Map<Class<?>, Function<String, Object>> PARSE_TYPES;
+
+    static {
+        String[] primitiveNames = new String[]{"int", "long", "byte", "float", "double", "boolean", "String"};
+        Class[] classes = new Class[]{Integer.class, Long.class, Byte.class, Float.class, Double.class,
+                Boolean.class, String.class};
+
+        for (int i = 0; i < primitiveNames.length; i++) {
+            AVAILABLE_TYPES.put(primitiveNames[i], classes[i]);
+            AVAILABLE_CLASSES.put(classes[i], primitiveNames[i]);
+        }
+    }
+
+    static {
+        Map<Class<?>, Function<String, Object>> unitializerMap = new HashMap<>();
+        unitializerMap.put(Integer.class, Integer::parseInt);
+        unitializerMap.put(Long.class, Long::parseLong);
+        unitializerMap.put(Byte.class, Byte::parseByte);
+        unitializerMap.put(Float.class, Float::parseFloat);
+        unitializerMap.put(Double.class, Double::parseDouble);
+        unitializerMap.put(Boolean.class, string -> {
+            if (!string.matches("(?i)true|false")) {
+                throw new ColumnFormatException("Expected 'true' or 'false'");
+            }
+            return Boolean.parseBoolean(string);
+        });
+        unitializerMap.put(String.class, string -> {
+            if (string.charAt(0) != '"' || string.charAt(string.length() - 1) != '"') {
+                throw new ColumnFormatException("String must be quoted");
+            }
+            return string.substring(1, string.length() - 1);
+        });
+        PARSE_TYPES = Collections.unmodifiableMap(unitializerMap);
+    }
 
     private Map<String, Table> tables;
     private Path dbPath;
@@ -70,7 +113,7 @@ public class DbTableProvider implements TableProvider {
         }
 
         for (Class<?> columnType : columnTypes) {
-            if (!StoreableMain.AVAILABLE_CLASSES.containsKey(columnType)) {
+            if (!AVAILABLE_CLASSES.containsKey(columnType)) {
                 throw new IllegalArgumentException("Wrong type (" + columnType.toString() + ")");
             }
         }
@@ -82,12 +125,12 @@ public class DbTableProvider implements TableProvider {
         Path newTablePath = dbPath.resolve(name);
         newTablePath.toFile().mkdir();
         Table newTable = new DbTable(newTablePath, name, new HashMap<>(), columnTypes, this);
-        Path signaturePath = newTablePath.resolve(StoreableMain.TABLE_SIGNATURE);
+        Path signaturePath = newTablePath.resolve(TABLE_SIGNATURE);
         signaturePath.toFile().createNewFile();
         try (RandomAccessFile write = new RandomAccessFile(signaturePath.toString(), "rw")) {
             for (Class type : columnTypes) {
-                String s = StoreableMain.AVAILABLE_CLASSES.get(type) + " ";
-                write.write(s.getBytes(StoreableMain.ENCODING));
+                String s = AVAILABLE_CLASSES.get(type) + " ";
+                write.write(s.getBytes(ENCODING));
             }
         }
         tables.put(name, newTable);
@@ -117,7 +160,7 @@ public class DbTableProvider implements TableProvider {
             throw new ParseException("'[' or ']' is missing", 0);
         }
         value = value.substring(1, value.length() - 1);
-        String[] records = value.split("," + StoreableMain.IGNORE_SYMBOLS_IN_DOUBLE_QUOTES_REGEX);
+        String[] records = value.split("," + IGNORE_SYMBOLS_IN_DOUBLE_QUOTES_REGEX);
         if (records.length != table.getColumnsCount()) {
             throw new ParseException("Incorrect number of records: "
                     + table.getColumnsCount() + " expected, but " + records.length + " found.", 0);
@@ -129,7 +172,7 @@ public class DbTableProvider implements TableProvider {
                 if (record.equals("null")) {
                     deserialized.setColumnAt(i, null);
                 } else {
-                    deserialized.setColumnAt(i, StoreableMain.PARSE_TYPES.get(table.getColumnType(i)).apply(record));
+                    deserialized.setColumnAt(i, PARSE_TYPES.get(table.getColumnType(i)).apply(record));
                 }
             } catch (ColumnFormatException e) {
                 throw new ParseException("Record " + i + " is not correct: " + e.getMessage(), 0);
@@ -145,12 +188,6 @@ public class DbTableProvider implements TableProvider {
     public String serialize(Table table, Storeable value) {
         List<String> storeableValues = getStoreableValues(table, value);
         String joined = String.join(", ", storeableValues);
-        StringBuilder result = new StringBuilder();
-        /*
-        result.append('[');
-        result.append(joined);
-        result.append(']');
-        */
         return "[" + joined + "]";
     }
 
@@ -191,20 +228,21 @@ public class DbTableProvider implements TableProvider {
     }
 
     private static void checkTableName(final String name) {
-        if (name == null || name.matches(StoreableMain.ILLEGAL_TABLE_NAME_PATTERN)) {
+        if (name == null || name.matches(ILLEGAL_TABLE_NAME_PATTERN)) {
             throw new IllegalArgumentException("Invalid format: " + name);
         }
     }
 
     public static List<String> getStoreableValues(Table table, Storeable value) {
-        int tableColumnsAmount = table.getColumnsCount();
+        int columnsCount = table.getColumnsCount();
         List<String> storeableValues = new ArrayList<>();
         Method[] methods = value.getClass().getDeclaredMethods();
         Map<Class<?>, Method> getMethods = new HashMap<>();
         for (Method method: methods) {
             getMethods.put(method.getReturnType(), method);
         }
-        for (int i = 0; i < tableColumnsAmount; i++) {
+        for (int i = 0; i < columnsCount; i++) {
+
             Class currentColumnType = table.getColumnType(i);
             try {
                 Object columnValue = getMethods.get(currentColumnType).invoke(value, i);
@@ -212,9 +250,9 @@ public class DbTableProvider implements TableProvider {
                     storeableValues.add("null");
                 } else {
                     if (columnValue.getClass().equals(String.class)) {
-                        storeableValues.add(String.valueOf('"') + columnValue.toString() + '"');
+                        storeableValues.add('"' + columnValue.toString() + '"');
                     } else {
-                        storeableValues.add(String.valueOf(columnValue));
+                        storeableValues.add(columnValue.toString());
                     }
                 }
             } catch (InvocationTargetException e) {
