@@ -1,6 +1,6 @@
 package ru.fizteh.fivt.students.vadim_mazaev.InterpreterTest;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -19,56 +19,54 @@ public class InterpreterTest {
     private final String testOutput = "TEST";
     private ByteArrayOutputStream outputStream;
     private PrintStream printStream;
-    
+    private BiConsumer<Object, String[]> printerCommand = (testConnector,
+            arguments) -> printStream.println(testOutput);
+
     @Before
     public void setUp() {
         outputStream = new ByteArrayOutputStream();
         printStream = new PrintStream(outputStream);
     }
-    
+
     @Test(expected = IllegalArgumentException.class)
     public void testInterpreterThrowsExceptionConstructedForNullStream() {
         new Interpreter(null, new Command[] {}, null, null);
     }
-    
+
     @Test
-    public void testInterpreterRunInInteractiveMode()
-            throws Exception {
-        Interpreter interpreter = new Interpreter(null, new Command[] {
-                new Command("test", 0, new BiConsumer<Object, String[]>() {
-                    @Override
-                    public void accept(Object testConnector, String[] arguments) {
-                        printStream.println(testOutput);
-                    }
-                })}, new ByteArrayInputStream(
-                    (testCommand + newLine + "exit" + newLine).getBytes()), printStream);
+    public void testInterpreterRunInInteractiveMode() throws Exception {
+        Interpreter interpreter = new Interpreter(null,
+                new Command[] {new Command("test", 0, printerCommand)},
+                new ByteArrayInputStream(
+                        (testCommand + newLine + "exit" + newLine).getBytes()),
+                printStream);
         interpreter.run(new String[] {});
-        assertEquals(Interpreter.PROMPT + testOutput + newLine + Interpreter.PROMPT,
-                outputStream.toString());
+        assertEquals(Interpreter.PROMPT + testOutput + newLine
+                + Interpreter.PROMPT, outputStream.toString());
     }
-    
+
     @Test
     public void testInterpreterRunInBatchMode() throws Exception {
-        Interpreter interpreter = new Interpreter(null, new Command[] {
-                new Command("test", 0, new BiConsumer<Object, String[]>() {
-                    @Override
-                    public void accept(Object testConnector, String[] arguments) {
-                        printStream.println(testOutput);
-                    }
-                })}, new ByteArrayInputStream(new byte[] {}), printStream);
-        interpreter.run(new String[] {testCommand + Interpreter.COMMAND_SEPARATOR, testCommand});
-        assertEquals(testOutput + newLine + testOutput + newLine, outputStream.toString());
+        Interpreter interpreter = new Interpreter(null,
+                new Command[] {new Command("test", 0, printerCommand)},
+                new ByteArrayInputStream(new byte[] {}), printStream);
+        interpreter.run(new String[] {
+                testCommand + Interpreter.COMMAND_SEPARATOR, testCommand});
+        assertEquals(testOutput + newLine + testOutput + newLine,
+                outputStream.toString());
     }
-    
+
     @Test
-    public void testRunInterpreterInButchModeForUnexpectedCommand() throws Exception {
+    public void testRunInterpreterInButchModeForUnexpectedCommand()
+            throws Exception {
         Interpreter interpreter = new Interpreter(null, new Command[] {},
                 new ByteArrayInputStream(new byte[] {}), printStream);
-        interpreter.run(new String[] {testCommand + Interpreter.COMMAND_SEPARATOR, testCommand});
-        assertEquals(Interpreter.NO_SUCH_COMMAND_MSG
-                + testCommand + newLine, outputStream.toString());
+        interpreter.run(new String[] {
+                testCommand + Interpreter.COMMAND_SEPARATOR, testCommand});
+        assertEquals(Interpreter.NO_SUCH_COMMAND_MSG + testCommand + newLine,
+                outputStream.toString());
     }
-    
+
     @Test
     public void testRunInterpreterInInteractiveModeForUnexpectedCommand()
             throws Exception {
@@ -76,23 +74,19 @@ public class InterpreterTest {
         Interpreter interpreter = new Interpreter(null, new Command[] {},
                 new ByteArrayInputStream(testInput.getBytes()), printStream);
         interpreter.run(new String[] {});
-        String expectedOutput
-            = Interpreter.PROMPT + Interpreter.NO_SUCH_COMMAND_MSG + testCommand + newLine
-            + Interpreter.PROMPT + Interpreter.NO_SUCH_COMMAND_MSG + testCommand + newLine
-            + Interpreter.PROMPT;
+        String expectedOutput = Interpreter.PROMPT
+                + Interpreter.NO_SUCH_COMMAND_MSG + testCommand + newLine
+                + Interpreter.PROMPT + Interpreter.NO_SUCH_COMMAND_MSG
+                + testCommand + newLine + Interpreter.PROMPT;
         assertEquals(expectedOutput, outputStream.toString());
     }
-    
+
     @Test
     public void testInterpreterForCommandWithWrongNumberOfArguments()
             throws Exception {
-        Interpreter interpreter = new Interpreter(null, new Command[] {
-                new Command("test", 0, new BiConsumer<Object, String[]>() {
-                    @Override
-                    public void accept(Object testConnector, String[] arguments) {
-                        printStream.println(testOutput);
-                    }
-                })}, new ByteArrayInputStream(new byte[] {}), printStream);
+        Interpreter interpreter = new Interpreter(null,
+                new Command[] {new Command("test", 0, printerCommand)},
+                new ByteArrayInputStream(new byte[] {}), printStream);
         interpreter.run(new String[] {testCommand + " some_argument"});
     }
 }

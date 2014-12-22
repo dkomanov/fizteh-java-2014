@@ -6,18 +6,19 @@ public class Command {
     private String name;
     private int numberOfArgs;
     private BiConsumer<Object, String[]> callback;
-    
-    public Command(String name, int numberOfArgs, BiConsumer<Object, String[]> callback) {
+
+    public Command(String name, int numberOfArgs,
+            BiConsumer<Object, String[]> callback) {
         this.name = name;
         this.numberOfArgs = numberOfArgs;
         this.callback = callback;
     }
-    
+
     public final String getName() {
         return name;
     }
 
-    public final void execute(Object connector, String[] args) throws Exception {
+    public final void execute(Object connector, String[] args) {
         if (numberOfArgs != args.length) {
             String message = name + ": Incorrect number of arguments: "
                     + numberOfArgs + " expected, but found " + args.length;
