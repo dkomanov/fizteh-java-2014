@@ -1,7 +1,5 @@
-package ru.fizteh.fivt.students.elina_denisova.j_unit;
+package ru.fizteh.fivt.students.elina_denisova.multi_file_hash_map;
 
-import ru.fizteh.fivt.storage.strings.Table;
-import ru.fizteh.fivt.storage.strings.TableProvider;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -13,11 +11,14 @@ import java.util.Map;
 import java.util.Set;
 
 
-public class MyTableProvider implements TableProvider {
+public class MyTableProvider {
 
     private HashMap<String, MyTable> tables;
     private String using;
     private File parentDirectory;
+
+    public static final int COUNT_OBJECT = 16;
+    public static final int COMMON_CONSTANT_INDEX = 100;
 
 
     public MyTableProvider(String path) {
@@ -41,7 +42,8 @@ public class MyTableProvider implements TableProvider {
                 if (childDirectory.isDirectory()) {
                     tables.put(childName, new MyTable(childDirectory));
                 } else {
-                    throw new Exception("MyTableProvider:" + childName + " from databases directory is not a directory");
+                    throw new Exception("MyTableProvider:" + childName
+                            + " from databases directory is not a directory");
                 }
             }
         } catch (UnsupportedOperationException e) {
@@ -51,19 +53,21 @@ public class MyTableProvider implements TableProvider {
         } catch (FileNotFoundException e) {
             HandlerException.handler(e);
         } catch (Exception e) {
-            HandlerException.handler("TableProviderFactory: Unknown error", e);
+            HandlerException.handler("MyTableProviderFactory: ", e);
         }
     }
 
-    @Override
-    public Table getTable(String name) {
+
+    public MyTable getTable(String name) {
         return tables.get(name);
     }
 
-    @Override
-    public Table createTable(String name) {
-        if (name == null) throw new IllegalArgumentException("MyTableProvider.createTable: "
-        + "Invalid name. ");
+
+    public MyTable createTable(String name) {
+        if (name == null) {
+            throw new IllegalArgumentException("MyTableProvider.createTable: "
+                    + "Invalid name. ");
+        }
         if (tables.containsKey(name)) {
             return null;
         } else {
@@ -77,23 +81,26 @@ public class MyTableProvider implements TableProvider {
         }
     }
 
-    @Override
+
     public void removeTable(String name) {
-        if (name == null) throw new IllegalArgumentException("MyTableProvider.removeTable: "
-                + "Invalid name. ");
+        if (name == null) {
+            throw new IllegalArgumentException("MyTableProvider.removeTable: "
+                    + "Invalid name. ");
+        }
         if (tables.containsKey(name)) {
             File table = new File(parentDirectory, name);
-            for (int i = 0; i < 16; i++) {
+            for (int i = 0; i < COUNT_OBJECT; i++) {
                 File subDir = new File(table, i + ".dir");
-                for (int j = 0; j < 16; j++) {
-                    String adds = Integer.toString(i * 100 + j);
+                for (int j = 0; j < COUNT_OBJECT; j++) {
+                    String adds = Integer.toString(i * COMMON_CONSTANT_INDEX + j);
                     if (tables.get(name).containsKey(adds)) {
                         File dbFile = new File(subDir, j + ".dat");
                         if (dbFile.exists()) {
                             try {
                                 Files.delete(dbFile.toPath());
                             } catch (IOException e) {
-                                throw new RuntimeException("MyTableProvider.removeTable: cannon delete database file", e);
+                                throw new RuntimeException("MyTableProvider.removeTable: "
+                                        + "cannon delete database file", e);
                             }
                         }
                     }
@@ -102,27 +109,28 @@ public class MyTableProvider implements TableProvider {
                     try {
                         Files.delete(subDir.toPath());
                     } catch (DirectoryNotEmptyException e) {
-                        throw new RuntimeException("MyTableProvider.removeTable: cannot remove table subdirectory", e);
+                        throw new RuntimeException("MyTableProvider.removeTable: "
+                                + "cannot remove table subdirectory", e);
                     } catch (IOException e) {
-                        throw new RuntimeException("MyTableProvider.removeTable: cannot delete database subdirectory", e);
+                        throw new RuntimeException("MyTableProvider.removeTable: "
+                                + "cannot delete database subdirectory", e);
                     }
                 }
             }
             try {
                 Files.delete(table.toPath());
             } catch (DirectoryNotEmptyException e) {
-                throw new RuntimeException("TableProvider.tDrop: cannot remove main table directory", e);
+                throw new RuntimeException("MyTableProvider.tDrop: cannot remove main table directory", e);
             } catch (IOException e) {
-                throw new RuntimeException("TableProvider.tDrop: cannot delete main database directory", e);
+                throw new RuntimeException("MyTableProvider.tDrop: cannot delete main database directory", e);
             }
-
             tables.remove(name);
+        } else {
+            throw new IllegalStateException("MyTableProvider.removeTable: " + name + "doesn't exist");
         }
-        else throw new IllegalStateException("MyTableProvider.removeTable: " + name + "doesn't exist");
-
     }
 
-    public Table getUsing() {
+    public MyTable getUsing() {
         return tables.get(using);
     }
 

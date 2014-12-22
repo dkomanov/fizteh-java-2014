@@ -1,10 +1,8 @@
-package ru.fizteh.fivt.students.elina_denisova.j_unit;
+package ru.fizteh.fivt.students.elina_denisova.multi_file_hash_map;
 
-import ru.fizteh.fivt.storage.strings.TableProviderFactory;
+public class MyTableProviderFactory {
 
-public class MyTableProviderFactory implements TableProviderFactory {
 
-    @Override
     public MyTableProvider create(String dir) {
         if (dir == null) {
             throw new IllegalArgumentException("MyTableProvider.create: " + dir

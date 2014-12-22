@@ -3,7 +3,7 @@ package ru.fizteh.fivt.students.elina_denisova.multi_file_hash_map;
 import java.util.ArrayList;
 
 public class PackageParse {
-    public static void parse(TableProviderFactory directory, String[] arg) {
+    public static void parse(MyTableProvider directory, String[] arg) {
         try {
             ArrayList<String> current = new ArrayList<String>();
             for (int i = 0; i < arg.length; ++i) {
@@ -26,7 +26,7 @@ public class PackageParse {
         } catch (IllegalArgumentException e) {
             HandlerException.handler("PackageParse: Wrong arguments", e);
         } catch (Exception e) {
-            HandlerException.handler("PackageParse: Unknown error", e);
+            HandlerException.handler("PackageParse: ", e);
         }
     }
 }

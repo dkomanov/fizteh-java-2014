@@ -3,7 +3,7 @@ package ru.fizteh.fivt.students.elina_denisova.multi_file_hash_map;
 import java.util.Scanner;
 
 public class InteractiveParse {
-    public static void parse(TableProviderFactory directory) {
+    public static void parse(MyTableProvider directory) {
         Scanner in = new Scanner(System.in);
         try {
             while (true) {
@@ -23,7 +23,7 @@ public class InteractiveParse {
             System.exit(0);
         } catch (Exception e) {
             in.close();
-            HandlerException.handler("InteractiveParse: Unknown error", e);
+            HandlerException.handler("InteractiveParse: ", e);
         }
         in.close();
     }
