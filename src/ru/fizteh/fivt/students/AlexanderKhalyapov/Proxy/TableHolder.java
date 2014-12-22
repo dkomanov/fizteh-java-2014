@@ -246,10 +246,7 @@ public class TableHolder implements TableProvider, AutoCloseable {
         try {
             checkIfValid();
             tableMap.forEach((s, table) -> {
-                try {
                     table.close();
-                } catch (IllegalStateException e) {
-                }
             });
             valid = false;
             tableMap.clear();
