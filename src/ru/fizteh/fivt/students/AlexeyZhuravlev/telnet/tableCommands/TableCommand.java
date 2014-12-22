@@ -17,7 +17,7 @@ public abstract class TableCommand {
         COMMANDS.put("create", new CreateTableCommand());
         COMMANDS.put("drop", new DropTableCommand());
         COMMANDS.put("use", new UseTableCommand());
-        COMMANDS.put("show_tables", new ShowTablesTableCommand());
+        COMMANDS.put("show", new ShowTablesTableCommand());
         COMMANDS.put("put", new PutTableCommand());
         COMMANDS.put("get", new GetTableCommand());
         COMMANDS.put("remove", new RemoveTableCommand());
@@ -29,45 +29,11 @@ public abstract class TableCommand {
         COMMANDS.put("describe", new DescribeCommand());
     }
 
-    private static String replaceInnerSpaces(String s, char occur) throws Exception {
-        boolean flag = false;
-        StringBuilder result = new StringBuilder();
-        for (int i = 0; i < s.length(); i++) {
-            if (s.charAt(i) == occur) {
-                flag = true;
-            }
-            if (flag && s.charAt(i) == ' ') {
-                result.append('`');
-            } else {
-                result.append(s.charAt(i));
-            }
-        }
-        if (!flag) {
-            return null;
-        }
-        return result.toString();
-    }
-
     public static TableCommand fromString(String s) throws Exception {
         if (s.length() < 1) {
             throw new Exception("");
         }
-        if (s.length() > 4 && s.substring(0, 5).equals("show ")) {
-            s = s.replaceFirst(" ", "_");
-        }
-        if (s.length() > 6 && s.substring(0, 7).equals("create ")) {
-            s = replaceInnerSpaces(s, '(');
-            if (s == null) {
-                throw new Exception("wrong type (create statement must have types in ())");
-            }
-        }
-        if (s.length() > 3 && s.substring(0, 4).equals("put ")) {
-            s = replaceInnerSpaces(s, '<');
-            if (s == null) {
-                throw new Exception("wrong type (value must be xml-serialized)");
-            }
-        }
-        String[] tokens = s.split("\\s+", 0);
+        String[] tokens = s.split("\\s(?![^\\(]*\\))(?![^<]*>)", 0);
         if (COMMANDS.containsKey(tokens[0])) {
             TableCommand command = COMMANDS.get(tokens[0]);
             if (tokens.length - 1 != command.numberOfArguments()) {

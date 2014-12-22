@@ -1,6 +1,7 @@
 package ru.fizteh.fivt.students.AlexeyZhuravlev.telnet.tableCommands;
 
 import ru.fizteh.fivt.students.AlexeyZhuravlev.telnet.ShellTableProvider;
+import ru.fizteh.fivt.students.AlexeyZhuravlev.telnet.UnknownCommandException;
 
 import java.io.PrintStream;
 
@@ -17,7 +18,14 @@ public class ShowTablesTableCommand extends TableCommand {
     }
 
     @Override
+    protected void putArguments(String[] args) throws Exception {
+        if (!args[1].equals("tables")) {
+            throw new UnknownCommandException();
+        }
+    }
+
+    @Override
     protected int numberOfArguments() {
-        return 0;
+        return 1;
     }
 }

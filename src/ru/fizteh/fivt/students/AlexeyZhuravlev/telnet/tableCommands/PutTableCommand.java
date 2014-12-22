@@ -42,6 +42,6 @@ public class PutTableCommand extends TableCommand {
     @Override
     protected void putArguments(String[] args) {
         key = args[1];
-        value = args[2].replaceAll("`", " ");
+        value = args[2];
     }
 }
