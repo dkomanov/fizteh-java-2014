@@ -3,7 +3,6 @@ package ru.fizteh.fivt.students.YaronskayaLiubov.StructuredDataTables;
 import ru.fizteh.fivt.storage.structured.Table;
 
 import java.io.File;
-import java.io.IOException;
 
 /**
  * Created by luba_yaronskaya on 18.10.14.
