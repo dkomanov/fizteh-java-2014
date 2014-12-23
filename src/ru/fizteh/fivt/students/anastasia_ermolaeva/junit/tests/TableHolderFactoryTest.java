@@ -6,7 +6,7 @@ import org.junit.Test;
 import ru.fizteh.fivt.storage.strings.TableProvider;
 import ru.fizteh.fivt.storage.strings.TableProviderFactory;
 import ru.fizteh.fivt.students.anastasia_ermolaeva.junit.TableHolderFactory;
-import ru.fizteh.fivt.students.anastasia_ermolaeva.junit.util.Utility;
+import ru.fizteh.fivt.students.anastasia_ermolaeva.util.Utility;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -26,6 +26,7 @@ public class TableHolderFactoryTest {
             Files.createDirectory(testDirectory);
         }
     }
+
     @Test(expected = IllegalArgumentException.class)
     public final void testFactoryThrowsExceptionCreatedNullTableHolder() {
         TableProviderFactory test = new TableHolderFactory();

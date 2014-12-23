@@ -6,92 +6,88 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 import java.io.Writer;
 import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
 import java.util.IdentityHashMap;
-import java.util.List;
 
 /**
  * Created by kagudkov on 30.11.14.
  */
 public class MyWriteProxyHandler implements InvocationHandler {
+
     private Writer writer;
     private Object object;
 
-    public MyWriteProxyHandler(Writer writerTmp, Object implementation) {
+    MyWriteProxyHandler(Writer writerTmp, Object object) {
         writer = writerTmp;
-        object = implementation;
+        this.object = object;
     }
 
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-        XMLOutputFactory factory = XMLOutputFactory.newInstance();
-        XMLStreamWriter xmlStreamWriter = factory.createXMLStreamWriter(writer);
-        if (xmlStreamWriter == null) {
+        try {
+            XMLOutputFactory xml = XMLOutputFactory.newInstance();
+            XMLStreamWriter xsw = xml.createXMLStreamWriter(writer);
+            xsw.writeStartElement("invoke");
+            xsw.writeAttribute("timestamp", String.valueOf(System.currentTimeMillis()));
+            xsw.writeAttribute("class", object.getClass().getName());
+            xsw.writeAttribute("name", method.getName());
+            if (args == null || args.length == 0) {
+                xsw.writeEmptyElement("arguments");
+            } else {
+                xsw.writeStartElement("arguments");
+                for (Object arg : args) {
+                    xsw.writeStartElement("argument");
+                    serializeObject(arg, xsw, new IdentityHashMap<>());
+                    xsw.writeEndElement();
+                }
+                xsw.writeEndElement();
+            }
+            try {
+                Object result = method.invoke(object, args);
+                if (method.getReturnType() != void.class) {
+                    xsw.writeStartElement("return");
+                    serializeObject(result, xsw, new IdentityHashMap<>());
+                    xsw.writeEndElement();
+                }
+                return result;
+            } catch (InvocationTargetException e) {
+                xsw.writeStartElement("thrown");
+                xsw.writeCharacters(e.getTargetException().toString());
+                xsw.writeEndElement();
+                throw e.getTargetException();
+            } finally {
+                xsw.writeEndDocument();
+                xsw.writeCharacters("\n");
+                xsw.flush();
+                xsw.close();
+            }
+        } catch (XMLStreamException e) {
             return null;
         }
-        xmlStreamWriter.writeStartElement("invoke");
-        xmlStreamWriter.writeAttribute("timestamp", ((Long) System.currentTimeMillis()).toString());
-        xmlStreamWriter.writeAttribute("class", object.getClass().getSimpleName());
-        xmlStreamWriter.writeAttribute("name", method.getName());
-        writeArguments(xmlStreamWriter, args);
-        Object result = null;
-        boolean exception = false;
-        try {
-            result = method.invoke(object, args);
-        } catch (Throwable e) {
-            exception = true;
-            xmlStreamWriter.writeStartElement("thrown");
-            xmlStreamWriter.writeCharacters(e.toString());
-            xmlStreamWriter.writeEndElement();
-        }
-        if (!exception) {
-
-            if (method.getReturnType() != void.class) {
-                xmlStreamWriter.writeStartElement("return");
-                if (result == null) {
-                    xmlStreamWriter.writeEmptyElement("null");
-                } else {
-                    xmlStreamWriter.writeCharacters(result.toString());
-                }
-                xmlStreamWriter.writeEndElement();
-            }
-        }
-        xmlStreamWriter.writeEndElement();
-        return null;
     }
 
-    private void writeArguments(XMLStreamWriter xmlStreamWriter, Object[] args) throws XMLStreamException {
-        if (args == null) {
-            xmlStreamWriter.writeEmptyElement("arguments");
+    private void serializeObject(Object object, XMLStreamWriter xsw, IdentityHashMap<Object, Object> set)
+            throws XMLStreamException {
+        if (object == null) {
+            xsw.writeEmptyElement("null");
         } else {
-            xmlStreamWriter.writeStartElement("arguments");
-            IdentityHashMap<Object, Object> used = new IdentityHashMap<>();
-            List<Object> references = new ArrayList<>();
-            dfs(xmlStreamWriter, references, used, true);
-        }
-    }
-
-    private void dfs(XMLStreamWriter xmlStreamWriter, List<Object> references, IdentityHashMap<Object, Object> used,
-                     boolean argument) throws XMLStreamException {
-        used.put(references, null);
-        for (Object ref : references) {
-            if (argument) {
-                xmlStreamWriter.writeStartElement("argument");
-            } else {
-                xmlStreamWriter.writeStartElement("value");
-            }
-            if (ref instanceof Iterable) {
-                if (used.containsKey(ref)) {
-                    xmlStreamWriter.writeStartElement("cyclic");
+            if (object instanceof Iterable) {
+                if (set.containsKey(object)) {
+                    xsw.writeEmptyElement("cyclic");
                 } else {
-                    xmlStreamWriter.writeStartElement("list");
-                    dfs(xmlStreamWriter, (List<Object>) ref, used, false);
+                    set.put(object, null);
+                    xsw.writeStartElement("list");
+                    for (Object element : (Iterable) object) {
+                        xsw.writeStartElement("value");
+                        serializeObject(element, xsw, set);
+                        xsw.writeEndElement();
+                    }
+                    xsw.writeEndElement();
                 }
             } else {
-                xmlStreamWriter.writeCharacters(ref.toString());
+                xsw.writeCharacters(object.toString());
             }
-            xmlStreamWriter.writeEndElement();
         }
     }
 }

@@ -6,6 +6,7 @@ public class Command {
     private String name;
     private int numArguments;
     private BiConsumer<TableState, String[]> callback;
+
     public Command(final String name, final int numArguments,
                    final BiConsumer<TableState, String[]> callback) {
         this.name = name;

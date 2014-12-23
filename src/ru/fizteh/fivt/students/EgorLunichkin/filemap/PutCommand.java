@@ -13,9 +13,9 @@ public class PutCommand implements Command {
 
     public void run() throws Exception {
         if (!dataBase.getDataBase().containsKey(key)) {
-            System.out.println("new");
+            //System.out.println("new");
         } else {
-            System.out.println("overwrite");
+            //System.out.println("overwrite");
             System.out.println(dataBase.getDataBase().remove(key));
         }
         dataBase.getDataBase().put(key, value);

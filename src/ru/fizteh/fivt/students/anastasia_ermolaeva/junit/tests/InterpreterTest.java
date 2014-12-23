@@ -3,10 +3,9 @@ package ru.fizteh.fivt.students.anastasia_ermolaeva.junit.tests;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import ru.fizteh.fivt.students.anastasia_ermolaeva.junit.util.Command;
-import ru.fizteh.fivt.students.anastasia_ermolaeva.junit.util.ExitException;
-import ru.fizteh.fivt.students.anastasia_ermolaeva.junit.util.Interpreter;
-import ru.fizteh.fivt.students.anastasia_ermolaeva.junit.util.TableState;
+import ru.fizteh.fivt.students.anastasia_ermolaeva.util.Command;
+import ru.fizteh.fivt.students.anastasia_ermolaeva.util.exceptions.ExitException;
+import ru.fizteh.fivt.students.anastasia_ermolaeva.junit.Interpreter;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -41,7 +40,7 @@ public class InterpreterTest {
     @Test
     public void testRunValidUserMode() {
         Interpreter test = new Interpreter(null, new Command[]{
-                new Command("command", 1, (TableState tableS, String[] arguments) -> printStream.println(testOutput))},
+                new Command("command", 1, (Object tableS, String[] arguments) -> printStream.println(testOutput))},
                 new ByteArrayInputStream(
                         (testCommand + newLine).getBytes()), printStream, printErrStream);
         try {
@@ -51,7 +50,7 @@ public class InterpreterTest {
             assertEquals(0, e.getStatus());
 
             assertEquals(test.PROMPT + testOutput + newLine + test.PROMPT,
-                   outputStream.toString());
+                    outputStream.toString());
         }
 
     }
@@ -59,7 +58,7 @@ public class InterpreterTest {
     @Test
     public void testRunValidBatchMode() {
         Interpreter test = new Interpreter(null, new Command[]{
-                new Command("command", 1, (TableState tableS, String[] arguments) -> printStream.println(testOutput))},
+                new Command("command", 1, (Object tableS, String[] arguments) -> printStream.println(testOutput))},
                 new ByteArrayInputStream(new byte[]{}), printStream, printErrStream);
         try {
             test.run(new String[]{testCommand + test.STATEMENT_DELIMITER, testCommand});
@@ -103,33 +102,35 @@ public class InterpreterTest {
     @Test
     public void testBatchModePrintErrorMessageInErrStreamForCommandWithWrongNumberOfArguments() {
         Interpreter test = new Interpreter(null, new Command[]{
-                new Command("command", 1, (TableState tableS, String[] arguments) -> printStream.println(testOutput))},
+                new Command("command", 1, (Object tableS, String[] arguments) -> printStream.println(testOutput))},
                 new ByteArrayInputStream(new byte[]{}), printStream, printErrStream);
         try {
             test.run(new String[]{testCommand + " argument"});
         } catch (ExitException e) {
 
             assertEquals("command: invalid number of arguments: 0 expected, 1 found."
-            + newLine, outputStream.toString());
+                    + newLine, outputStream.toString());
 
             assertNotEquals(0, e.getStatus());
         }
     }
+
     @Test
     public void testUserModePrintErrorMessageInOutStreamForCommandWithWrongNumberOfArguments() {
         Interpreter test = new Interpreter(null, new Command[]{
-                new Command("command", 1, (TableState tableS, String[] arguments) -> printStream.println(testOutput))},
+                new Command("command", 1, (Object tableS, String[] arguments) -> printStream.println(testOutput))},
                 new ByteArrayInputStream((testCommand + " argument").getBytes()), printStream, printErrStream);
         try {
             test.run(new String[]{});
         } catch (ExitException e) {
 
             assertEquals(test.PROMPT
-            + "command: invalid number of arguments: 0 expected, 1 found."
-            + newLine + test.PROMPT,
+                            + "command: invalid number of arguments: 0 expected, 1 found."
+                            + newLine + test.PROMPT,
                     outputStream.toString());
         }
     }
+
     @After
     public void tearDown() throws IOException {
         outputStream.close();

@@ -16,6 +16,7 @@ public class Interpreter {
             this.commands.put(command.getName(), command);
         }
     }
+
     public final void run(final String[] args) {
         try {
             if (args.length == 0) {
@@ -30,13 +31,13 @@ public class Interpreter {
 
     private void batchMode(final String[] args) throws ExitException {
         StringBuilder cmd = new StringBuilder();
-        for (String arg: args) {
+        for (String arg : args) {
             cmd.append(arg);
             cmd.append(' ');
         }
         cmd.append("exit");
         String[] commands = cmd.toString().trim().split(";");
-        for (String command:commands) {
+        for (String command : commands) {
             commandHandler(command, false);
         }
     }
@@ -52,7 +53,7 @@ public class Interpreter {
                     System.exit(0);
                 }
                 String[] commands = line.trim().split(";");
-                for (String command:commands) {
+                for (String command : commands) {
                     commandHandler(command, true);
                 }
             }
@@ -62,49 +63,49 @@ public class Interpreter {
     }
 
     private void commandHandler(String cmd,
-                                  boolean userMode) throws ExitException {
+                                boolean userMode) throws ExitException {
         String[] arguments = cmd.trim().split("\\s+");
         if (arguments[0].equals("show")) {
-                String cmdName = "show";
-                if (arguments.length > 1) {
-                    cmdName = "show " + arguments[1];
-                    String[] newArguments = new String[arguments.length - 1];
-                    newArguments[0] = cmdName;
-                    for (int i = 1; i < arguments.length - 1; i++) {
-                        newArguments[i] = arguments[i + 1];
-                    }
-                    Command command = commands.get(cmdName);
-                    if (command == null) {
-                        System.out.println("Command not found: " + cmdName);
-                        if (!userMode) {
-                            throw new ExitException(1);
-                        }
-                    } else {
-                        try {
-                            command.execute(tableState, newArguments);
-                        } catch (IllegalNumberOfArgumentsException e) {
-                            if (!userMode) {
-                                throw new ExitException(1);
-                            }
-                        }
+            String cmdName = "show";
+            if (arguments.length > 1) {
+                cmdName = "show " + arguments[1];
+                String[] newArguments = new String[arguments.length - 1];
+                newArguments[0] = cmdName;
+                for (int i = 1; i < arguments.length - 1; i++) {
+                    newArguments[i] = arguments[i + 1];
+                }
+                Command command = commands.get(cmdName);
+                if (command == null) {
+                    System.out.println("Command not found: " + cmdName);
+                    if (!userMode) {
+                        throw new ExitException(1);
                     }
                 } else {
-                    Command command = commands.get(cmdName);
-                    if (command == null) {
-                        System.out.println("Command not found: " + cmdName);
+                    try {
+                        command.execute(tableState, newArguments);
+                    } catch (IllegalNumberOfArgumentsException e) {
                         if (!userMode) {
                             throw new ExitException(1);
-                        }
-                    } else {
-                        try {
-                            command.execute(tableState, arguments);
-                        } catch (IllegalNumberOfArgumentsException e) {
-                            if (!userMode) {
-                                throw new ExitException(1);
-                            }
                         }
                     }
                 }
+            } else {
+                Command command = commands.get(cmdName);
+                if (command == null) {
+                    System.out.println("Command not found: " + cmdName);
+                    if (!userMode) {
+                        throw new ExitException(1);
+                    }
+                } else {
+                    try {
+                        command.execute(tableState, arguments);
+                    } catch (IllegalNumberOfArgumentsException e) {
+                        if (!userMode) {
+                            throw new ExitException(1);
+                        }
+                    }
+                }
+            }
         } else {
             try {
                 if ((arguments.length > 0) && !arguments[0].isEmpty()) {

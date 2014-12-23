@@ -21,8 +21,10 @@ public class DataBase {
         }
     }
 
+    public DataBase() {}
+
     public String dbPath;
-    private HashMap<String, String> db;
+    protected HashMap<String, String> db;
 
     public HashMap<String, String> getDataBase() {
         return db;

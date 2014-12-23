@@ -1,11 +1,9 @@
 package ru.fizteh.fivt.students.vadim_mazaev.DataBaseTest;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import java.util.Arrays;
 
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 
 import ru.fizteh.fivt.storage.structured.ColumnFormatException;
@@ -13,24 +11,20 @@ import ru.fizteh.fivt.students.vadim_mazaev.DataBase.Serializer;
 
 public class SerializerTest {
 
-    @Before
-    public void setUp() throws Exception {
-    }
-
     @Test(expected = ColumnFormatException.class)
     public void testSerializerThrowsExceptionSettingIncorrectTypeOfObject() {
         Class<?>[] structure = {Integer.class};
         Serializer serializer = new Serializer(Arrays.asList(structure));
         serializer.setColumnAt(0, 5.5);
     }
-    
+
     @Test(expected = IndexOutOfBoundsException.class)
     public void testSerializerThrowsExceptionSettingObjectAtIncorrectIndex() {
         Class<?>[] structure = {Integer.class, String.class};
         Serializer serializer = new Serializer(Arrays.asList(structure));
         serializer.setColumnAt(2, null);
     }
-    
+
     @Test
     public void testSerializerSetColumnAtMethodForCorrectTypes() {
         Class<?>[] structure = {Integer.class, String.class};
@@ -38,10 +32,10 @@ public class SerializerTest {
         serializer.setColumnAt(0, 5);
         serializer.setColumnAt(1, null);
     }
-    
+
     @Test
     public void testSerializerGetColumnAtMethodForNullObjects() {
-        Class<?>[] structure = {Integer.class, Byte.class, Float.class, 
+        Class<?>[] structure = {Integer.class, Byte.class, Float.class,
                 Double.class, Long.class, Boolean.class, String.class};
         Serializer serializer = new Serializer(Arrays.asList(structure));
         for (int i = 0; i < structure.length; i++) {
@@ -58,10 +52,10 @@ public class SerializerTest {
         assertEquals(null, serializer.getBooleanAt(5));
         assertEquals(null, serializer.getStringAt(6));
     }
-    
+
     @Test
     public void testSerializerGetColumnAtMethodForNonNullObjects() {
-        Class<?>[] structure = {Integer.class, Byte.class, Float.class, 
+        Class<?>[] structure = {Integer.class, Byte.class, Float.class,
                 Double.class, Long.class, Boolean.class, String.class};
         Serializer serializer = new Serializer(Arrays.asList(structure));
         serializer.setColumnAt(0, 0);
@@ -78,10 +72,6 @@ public class SerializerTest {
         assertEquals(Long.valueOf(0), serializer.getLongAt(4));
         assertEquals(false, serializer.getBooleanAt(5));
         assertEquals("abc", serializer.getStringAt(6));
-    }
-    
-    @After
-    public void tearDown() throws Exception {
     }
 
 }

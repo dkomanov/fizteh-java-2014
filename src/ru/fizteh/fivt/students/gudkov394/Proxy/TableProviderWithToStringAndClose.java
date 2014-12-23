@@ -58,7 +58,7 @@ public class TableProviderWithToStringAndClose extends ParallelTableProvider imp
     }
 
     @Override
-    public Table getTable(String name) {
+    public Table getTable(String name) throws IllegalArgumentException {
         checkIsClosed();
         lock.readLock().lock();
         try {

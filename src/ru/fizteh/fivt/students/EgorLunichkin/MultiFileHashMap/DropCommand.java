@@ -21,4 +21,6 @@ public class DropCommand implements Command {
             System.out.println("dropped");
         }
     }
+
+    public void runOnTable(MultiTable table) {}
 }

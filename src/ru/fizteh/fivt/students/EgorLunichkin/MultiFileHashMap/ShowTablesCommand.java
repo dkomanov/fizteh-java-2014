@@ -10,10 +10,12 @@ public class ShowTablesCommand implements Command {
     private MultiDataBase multiDataBase;
 
     public void run() throws MultiFileHashMapException {
-        for (HashMap.Entry<String, Table> entry : multiDataBase.tables.entrySet()) {
+        for (HashMap.Entry<String, MultiTable> entry : multiDataBase.tables.entrySet()) {
             String name = entry.getKey();
             String rowCount = String.valueOf(entry.getValue().tableSize());
             System.out.println(name + " " + rowCount);
         }
     }
+
+    public void runOnTable(MultiTable table) {}
 }

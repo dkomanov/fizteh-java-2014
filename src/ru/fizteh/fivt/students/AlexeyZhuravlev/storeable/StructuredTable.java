@@ -114,4 +114,8 @@ public class StructuredTable implements Table {
     public StructuredTableProvider getProvider() {
         return provider;
     }
+
+    public List<Class<?>> getTypes() {
+        return types;
+    }
 }

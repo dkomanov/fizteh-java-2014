@@ -67,7 +67,7 @@ public class MultiFileMapImpl implements MultiFileMap {
         for (File dir : dirs) {
             final File[] files = dir.listFiles();
             if (files == null) {
-                throw new IOException(String.format("%s is not directory", dir.toPath()));
+                continue;
             }
 
             for (File file : files) {
@@ -144,7 +144,10 @@ public class MultiFileMapImpl implements MultiFileMap {
         for (File dir : dirs) {
             final File[] files = dir.listFiles();
             if (files == null) {
-                throw new IOException(String.format("Couldn't clear %s", dir.getAbsolutePath()));
+                if (!dir.delete()) {
+                    throw new IOException(String.format("Couldn't delete %s", dir.getAbsolutePath()));
+                }
+                continue;
             }
             for (File file : files) {
                 if (!file.delete()) {

@@ -8,20 +8,23 @@ public final class Shell {
     private Shell() {
         //
     }
+
     public static void main(final String[] args) {
 
     }
+
     public static void batchMode(final String[] args) {
         StringBuilder cmd = new StringBuilder();
-        for (String arg: args) {
+        for (String arg : args) {
             cmd.append(arg);
             cmd.append(' ');
         }
         String[] commands = cmd.toString().trim().split(";");
-        for (String command:commands) {
+        for (String command : commands) {
             commandHandler(command, false);
         }
     }
+
     private static void commandHandler(
             final String command, final boolean mode) {
         String[] arguments = command.trim().split("\\s+");
@@ -67,6 +70,7 @@ public final class Shell {
             }
         }
     }
+
     public static void userMode() {
         try (Scanner scan = new Scanner(System.in)) {
             while (true) {
@@ -78,7 +82,7 @@ public final class Shell {
                     System.exit(0);
                 }
                 String[] commands = line.trim().split(";");
-                for (String command:commands) {
+                for (String command : commands) {
                     commandHandler(command, true);
                 }
             }
