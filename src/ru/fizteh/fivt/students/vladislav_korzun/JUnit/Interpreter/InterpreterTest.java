@@ -53,7 +53,7 @@ public class InterpreterTest {
     @Test
     public void interactiveModeTest() throws Exception {
         Interpreter interpreter = new Interpreter(null,
-                new Command[] {new Command("test", 0,new BiConsumer<Object, String[]>() {
+                new Command[] {new Command("test", 0, new BiConsumer<Object, String[]>() {
                     @Override
                     public void accept(Object state, String[] args) {
                         printStream.println("test");
