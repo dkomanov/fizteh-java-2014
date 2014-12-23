@@ -104,4 +104,8 @@ public class StoreableTable implements Table {
     public Class<?> getColumnType(int columnIndex) throws IndexOutOfBoundsException {
         return types.get(columnIndex);
     }
+
+    public TableProvider getProvider() {
+        return tableProvider;
+    }
 }
