@@ -4,7 +4,6 @@ import ru.fizteh.fivt.storage.strings.Table;
 import ru.fizteh.fivt.students.EgorLunichkin.MultiFileHashMap.*;
 
 import java.io.File;
-import java.io.PrintStream;
 import java.util.*;
 
 public class MyTable implements Table {
