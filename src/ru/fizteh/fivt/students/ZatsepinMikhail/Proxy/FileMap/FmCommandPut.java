@@ -1,8 +1,7 @@
-package ru.fizteh.fivt.students.ZatsepinMikhail.Parallel.FileMap;
+package ru.fizteh.fivt.students.ZatsepinMikhail.Proxy.FileMap;
 
 import ru.fizteh.fivt.storage.structured.Storeable;
-
-import ru.fizteh.fivt.students.ZatsepinMikhail.Parallel.StoreablePackage.Serializator;
+import ru.fizteh.fivt.students.ZatsepinMikhail.Proxy.StoreablePackage.Serializator;
 
 import java.text.ParseException;
 import java.util.NoSuchElementException;
