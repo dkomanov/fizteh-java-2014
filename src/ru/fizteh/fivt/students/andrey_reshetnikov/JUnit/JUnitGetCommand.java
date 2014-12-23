@@ -13,7 +13,7 @@ public class JUnitGetCommand extends JUnitCommand {
         if (base.getUsing() == null) {
             System.out.println("no table");
         } else {
-            get.executeOnTable(base.getUsing().dirtyTable);
+            get.executeOnTable(base.getUsing().getDirtyTable());
         }
     }
 

@@ -21,7 +21,7 @@ public class JUnitPutCommand extends JUnitCommand {
         if (base.getUsing() == null) {
             System.out.println("no table");
         } else {
-            put.executeOnTable(base.getUsing().dirtyTable);
+            put.executeOnTable(base.getUsing().getDirtyTable());
             base.getUsing().changes.add(put);
         }
     }
