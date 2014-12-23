@@ -1,0 +1,67 @@
+package ru.fizteh.fivt.students.tonmit.parallel.util;
+
+import ru.fizteh.fivt.students.tonmit.parallel.data_base_structure.TableManager;
+
+import java.io.UnsupportedEncodingException;
+
+public class Coordinates implements Comparable<Coordinates> {
+    private final int folderIndex;
+    private final int fileIndex;
+
+    public Coordinates(int folderIndex, int fileIndex) {
+        this.folderIndex = folderIndex;
+        this.fileIndex = fileIndex;
+    }
+
+    public Coordinates(String key, int numberOfPartitions) {
+        if (key == null) {
+            throw new IllegalArgumentException("Error: key == null");
+        }
+        try {
+            folderIndex = Math.abs(key.getBytes(TableManager.CODE_FORMAT)[0] % numberOfPartitions);
+            fileIndex = Math.abs((key.getBytes(TableManager.CODE_FORMAT)[0] / numberOfPartitions)
+                    % numberOfPartitions);
+        } catch (UnsupportedEncodingException e) {
+            throw new IllegalArgumentException("Bad key is given to constructor of Coordinates");
+        }
+    }
+
+    public int getFolderIndex() {
+        return folderIndex;
+    }
+    public int getFileIndex() {
+        return fileIndex;
+    }
+
+    @Override
+    public int compareTo(Coordinates coordinates) { // Not used in current version, but can be useful.
+        if (folderIndex > coordinates.folderIndex) {
+            return 1;
+        } else if (folderIndex < coordinates.folderIndex) {
+            return  -1;
+        } else if (fileIndex > coordinates.fileIndex) {
+            return  1;
+        } else if (fileIndex < coordinates.fileIndex) {
+            return  -1;
+        }
+        return 0;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || !(o instanceof Coordinates)) {
+            return  false;
+        } else {
+            Coordinates coordinates = (Coordinates) o;
+            return folderIndex == coordinates.folderIndex && fileIndex == coordinates.fileIndex;
+        }
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 3;
+        hash = 53 * hash + fileIndex;
+        hash = 53 * hash + folderIndex;
+        return hash;
+    }
+}
