@@ -14,7 +14,7 @@ public class TableEntry implements Storeable {
 
     @Override
     public void setColumnAt(int columnIndex, Object value) throws ColumnFormatException, IndexOutOfBoundsException {
-        if (value.getClass() != fields[columnIndex].getClass()) {
+        if (value != null && value.getClass() != fields[columnIndex].getClass()) {
             throw new ColumnFormatException("Invalid column format: expected "
                     + fields[columnIndex].getClass().getName() + ", got " + value.getClass().getName());
         }
@@ -28,7 +28,7 @@ public class TableEntry implements Storeable {
 
     @Override
     public Integer getIntAt(int columnIndex) throws ColumnFormatException, IndexOutOfBoundsException {
-        if (!(fields[columnIndex] instanceof Integer)) {
+        if (fields[columnIndex] != null && !(fields[columnIndex] instanceof Integer)) {
             throw new ColumnFormatException("Column is not Integer");
         }
         return (Integer) fields[columnIndex];
@@ -36,7 +36,7 @@ public class TableEntry implements Storeable {
 
     @Override
     public Long getLongAt(int columnIndex) throws ColumnFormatException, IndexOutOfBoundsException {
-        if (!(fields[columnIndex] instanceof Long)) {
+        if (fields[columnIndex] != null && !(fields[columnIndex] instanceof Long)) {
             throw new ColumnFormatException("Column is not Long");
         }
         return (Long) fields[columnIndex];
@@ -44,7 +44,7 @@ public class TableEntry implements Storeable {
 
     @Override
     public Byte getByteAt(int columnIndex) throws ColumnFormatException, IndexOutOfBoundsException {
-        if (!(fields[columnIndex] instanceof Byte)) {
+        if (fields[columnIndex] != null && !(fields[columnIndex] instanceof Byte)) {
             throw new ColumnFormatException("Column is not Byte");
         }
         return (Byte) fields[columnIndex];
@@ -52,7 +52,7 @@ public class TableEntry implements Storeable {
 
     @Override
     public Float getFloatAt(int columnIndex) throws ColumnFormatException, IndexOutOfBoundsException {
-        if (!(fields[columnIndex] instanceof Float)) {
+        if (fields[columnIndex] != null && !(fields[columnIndex] instanceof Float)) {
             throw new ColumnFormatException("Column is not Float");
         }
         return (Float) fields[columnIndex];
@@ -60,7 +60,7 @@ public class TableEntry implements Storeable {
 
     @Override
     public Double getDoubleAt(int columnIndex) throws ColumnFormatException, IndexOutOfBoundsException {
-        if (!(fields[columnIndex] instanceof Double)) {
+        if (fields[columnIndex] != null && !(fields[columnIndex] instanceof Double)) {
             throw new ColumnFormatException("Column is not Double");
         }
         return (Double) fields[columnIndex];
@@ -68,7 +68,7 @@ public class TableEntry implements Storeable {
 
     @Override
     public Boolean getBooleanAt(int columnIndex) throws ColumnFormatException, IndexOutOfBoundsException {
-        if (!(fields[columnIndex] instanceof Boolean)) {
+        if (fields[columnIndex] != null && !(fields[columnIndex] instanceof Boolean)) {
             throw new ColumnFormatException("Column is not Boolean");
         }
         return (Boolean) fields[columnIndex];
@@ -76,7 +76,7 @@ public class TableEntry implements Storeable {
 
     @Override
     public String getStringAt(int columnIndex) throws ColumnFormatException, IndexOutOfBoundsException {
-        if (!(fields[columnIndex] instanceof String)) {
+        if (fields[columnIndex] != null && !(fields[columnIndex] instanceof String)) {
             throw new ColumnFormatException("Column is not String");
         }
         return (String) fields[columnIndex];
