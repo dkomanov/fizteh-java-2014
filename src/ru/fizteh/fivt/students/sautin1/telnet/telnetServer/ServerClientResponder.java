@@ -32,7 +32,9 @@ public class ServerClientResponder implements Runnable {
 
     public ServerClientResponder(Socket socket) throws IOException, ParseException {
         localSocket = new ThreadLocal<Socket>() {
-            @Override protected Socket initialValue() { return socket; }
+            @Override protected Socket initialValue() {
+                return socket;
+            }
         };
 
 //        System.setProperty(DB_LOCATION_PROPERTY,
