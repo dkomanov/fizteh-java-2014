@@ -16,7 +16,7 @@ public class MyTable implements Table{
     private Map<String, String> bufferMap;
     private int changes;
 
-    public MyTable(Path currentTablePath, String currentTable) throws DataBaseException {
+    public MyTable(Path currentTablePath, String currentTable) {
         this.path = currentTablePath;
         this.name = currentTable;
         DataBaseSerializer serializer = new DataBaseSerializer();
@@ -63,7 +63,7 @@ public class MyTable implements Table{
     }
 
     @Override
-    public int commit() throws DataBaseException {
+    public int commit() {
         DataBaseSerializer serializer = new DataBaseSerializer();
         serializer.setMap(this.fileMap);
         serializer.writeTable(path);

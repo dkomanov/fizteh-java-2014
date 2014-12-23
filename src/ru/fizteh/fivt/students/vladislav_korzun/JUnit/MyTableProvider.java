@@ -14,7 +14,7 @@ public class MyTableProvider implements TableProvider {
     private Set<String> tables;
     private Path rootDir;
     
-    public MyTableProvider(String dir) throws DataBaseException {
+    public MyTableProvider(String dir) {
         rootDir = Paths.get(dir);
         if (!rootDir.toFile().exists()) {
             rootDir.toFile().mkdir();
@@ -37,7 +37,7 @@ public class MyTableProvider implements TableProvider {
     }
 
     @Override
-    public Table getTable(String name) throws DataBaseException {
+    public Table getTable(String name) {
         if (name == null) {
             throw new IllegalArgumentException("Name is null");
         }
@@ -49,7 +49,7 @@ public class MyTableProvider implements TableProvider {
     }
 
     @Override
-    public Table createTable(String name) throws DataBaseException {
+    public Table createTable(String name) {
         if (name == null) {
             throw new IllegalArgumentException("Name is null");
         }
