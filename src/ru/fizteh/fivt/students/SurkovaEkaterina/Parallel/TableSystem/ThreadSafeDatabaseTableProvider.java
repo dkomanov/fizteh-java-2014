@@ -17,8 +17,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class ThreadSafeDatabaseTableProvider implements TableProvider {
 
@@ -28,7 +27,7 @@ public class ThreadSafeDatabaseTableProvider implements TableProvider {
     private ThreadSafeDatabaseTable currentTable = null;
     HashMap<String, ThreadSafeDatabaseTable> tables =
             new HashMap<String, ThreadSafeDatabaseTable>();
-    private final Lock tableLock = new ReentrantLock(true);
+    private ReentrantReadWriteLock tableLock = new ReentrantReadWriteLock(true);
 
     public ThreadSafeDatabaseTableProvider(String directory) {
         if ((directory == null)
@@ -68,15 +67,20 @@ public class ThreadSafeDatabaseTableProvider implements TableProvider {
     @Override
     public List<String> getTableNames() {
         List<String> names = new ArrayList<String>();
-        for (String name : tables.keySet()) {
-            names.add(name);
+        tableLock.readLock().lock();
+        try {
+            for (String name : tables.keySet()) {
+                names.add(name);
+            }
+        } finally {
+            tableLock.readLock().unlock();
         }
         return names;
     }
 
     @Override
     public Table getTable(String name) {
-        tableLock.lock();
+        tableLock.readLock().lock();
         try {
                 if (name == null || name.isEmpty()) {
                 throw new IllegalArgumentException("Table's name cannot be empty");
@@ -100,13 +104,13 @@ public class ThreadSafeDatabaseTableProvider implements TableProvider {
             return table;
 
         } finally {
-            tableLock.unlock();
+            tableLock.readLock().unlock();
         }
     }
 
     @Override
     public Table createTable(String name, List<Class<?>> columnTypes) throws IOException {
-        tableLock.lock();
+        tableLock.writeLock().lock();
         try {
                 if (name == null || name.isEmpty()) {
                 throw new IllegalArgumentException("Table's name cannot be null!");
@@ -128,7 +132,7 @@ public class ThreadSafeDatabaseTableProvider implements TableProvider {
             tables.put(name, table);
             return table;
         } finally {
-            tableLock.unlock();
+            tableLock.writeLock().unlock();
         }
     }
 
@@ -232,7 +236,7 @@ public class ThreadSafeDatabaseTableProvider implements TableProvider {
     }
 
     public void removeTable(String name) {
-        tableLock.lock();
+        tableLock.writeLock().lock();
         try {
             if (name == null || name.isEmpty()) {
                 throw new IllegalArgumentException(
@@ -249,7 +253,7 @@ public class ThreadSafeDatabaseTableProvider implements TableProvider {
             File tableFile = new File(databaseDirectoryPath, name);
             deleteFile(tableFile);
         } finally {
-            tableLock.unlock();
+            tableLock.writeLock().unlock();
         }
     }
 
