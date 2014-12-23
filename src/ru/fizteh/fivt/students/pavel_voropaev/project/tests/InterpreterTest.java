@@ -6,10 +6,9 @@ import ru.fizteh.fivt.students.pavel_voropaev.project.custom_exceptions.InputMis
 import ru.fizteh.fivt.students.pavel_voropaev.project.interpreter.AbstractCommand;
 import ru.fizteh.fivt.students.pavel_voropaev.project.interpreter.Command;
 import ru.fizteh.fivt.students.pavel_voropaev.project.interpreter.Interpreter;
+import ru.fizteh.fivt.students.pavel_voropaev.project.interpreter.InterpreterState;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.PrintStream;
+import java.io.*;
 
 import static org.junit.Assert.assertEquals;
 
@@ -30,118 +29,165 @@ public class InterpreterTest {
         printStream = new PrintStream(outputStream);
     }
 
-    public class TestCommand extends AbstractCommand<Object> {
-        public TestCommand(Object context, int argumentsNum) {
-            super(commandName, argumentsNum, context);
+    private class TestCommand extends AbstractCommand {
+        public TestCommand(InterpreterState state, int argumentsNumber) {
+            super(commandName, argumentsNumber, state);
         }
 
         @Override
-        public void exec(String[] param, PrintStream out) {
-            out.println(testOutput);
+        public void exec(String[] param) {
+            state.getOutputStream().println(testOutput);
         }
     }
 
-    public class TestTableCommandWithException extends AbstractCommand<Object> {
-        public TestTableCommandWithException(Object context) {
-            super(command2Name, 0, context);
+    private class TestTableCommandWithException extends AbstractCommand {
+        public TestTableCommandWithException(InterpreterState state, int argumentsNumber) {
+            super(command2Name, argumentsNumber, state);
         }
 
         @Override
-        public void exec(String[] param, PrintStream out) {
+        public void exec(String[] param) {
             throw new InputMistakeException("exception");
         }
+    }
 
+    private class TestInterpreterState implements InterpreterState {
+        private InputStream in;
+        private PrintStream out;
+        private PrintStream err;
+        private boolean exitSafeAnswer;
+
+        public TestInterpreterState(InputStream in, PrintStream out, PrintStream err, boolean exitSafeAnswer) {
+            this.in = in;
+            this.out = out;
+            this.err = err;
+            this.exitSafeAnswer = exitSafeAnswer;
+        }
+
+        @Override
+        public InputStream getInputStream() {
+            return in;
+        }
+
+        @Override
+        public PrintStream getOutputStream() {
+            return out;
+        }
+
+        @Override
+        public PrintStream getErrorStream() {
+            return err;
+        }
+
+        @Override
+        public boolean isExitSafe() {
+            return exitSafeAnswer;
+        }
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void interpreterInitializationForNullStream() {
-        new Interpreter(new Command[]{}, null, null, null);
+        InterpreterState state = new TestInterpreterState(null, null, null, true);
+        new Interpreter(new Command[]{}, state);
     }
 
     @Test
-    public void interpreterInitialization() {
-        new Interpreter(new Command[]{}, new ByteArrayInputStream(new byte[]{}), printStream, printStream);
+    public void interpreterInteractiveModeSaving() throws IOException {
+        InterpreterState state = new TestInterpreterState(new ByteArrayInputStream(new byte[]{}), printStream,
+                printStream, true);
+        Interpreter interpreter = new Interpreter(new Command[]{}, state);
+
+        interpreter.run(new String[]{});
+        assertEquals(PROMPT, outputStream.toString());
     }
 
     @Test
-    public void interpreterBatchModeCorrectCommandNoSaving() {
-        Interpreter interpreter = new Interpreter(new Command[]{new TestCommand(new Object(), 0)},
-                new ByteArrayInputStream(new byte[]{}), printStream, printStream);
-        interpreter.run(new String[]{commandName + STATEMENT_DELIMITER + commandName});
-        assertEquals(testOutput + newLine + testOutput + newLine + exitWarning + newLine, outputStream.toString());
-    }
-
-    @Test
-    public void interpreterBatchModeCorrectCommandAndSaving() {
-        Interpreter interpreter = new Interpreter(new Command[]{new TestCommand(new Object(), 0)},
-                new ByteArrayInputStream(new byte[]{}), printStream, printStream);
-        interpreter.run(new String[]{commandName + STATEMENT_DELIMITER + "exit"});
-        assertEquals(testOutput + newLine, outputStream.toString());
-    }
-
-    @Test(expected = InputMistakeException.class)
-    public void interpreterBatchModeWrongCommand() {
-        Interpreter interpreter = new Interpreter(new Command[]{new TestCommand(new Object(), 0)},
-                new ByteArrayInputStream(new byte[]{}), printStream, printStream);
-        interpreter.run(new String[]{"wrong command"});
-    }
-
-    @Test
-    public void interpreterInteractiveModeWithEOT() {
-        Interpreter interpreter = new Interpreter(new Command[]{new TestCommand(new Object(), 0)},
-                new ByteArrayInputStream(new byte[]{}), printStream, printStream);
+    public void interpreterInteractiveModeWithoutSaving() throws IOException {
+        InterpreterState state = new TestInterpreterState(new ByteArrayInputStream(new byte[]{}), printStream,
+                printStream, false);
+        Interpreter interpreter = new Interpreter(new Command[]{}, state);
 
         interpreter.run(new String[]{});
         assertEquals(PROMPT + exitWarning + newLine, outputStream.toString());
     }
 
     @Test
-    public void interpreterInteractiveModeWithExit() {
-        Interpreter interpreter = new Interpreter(new Command[]{new TestCommand(new Object(), 0)},
-                new ByteArrayInputStream((commandName + newLine + "exit" + newLine).getBytes()),
-                printStream, printStream);
+    public void interpreterBatchModeCorrectCommandNoSaving() throws IOException {
+        InterpreterState state = new TestInterpreterState(new ByteArrayInputStream(new byte[]{}), printStream,
+                printStream, false);
+        Interpreter interpreter = new Interpreter(new Command[]{new TestCommand(state, 0)}, state);
 
-        interpreter.run(new String[]{});
-        assertEquals(PROMPT + testOutput + newLine + PROMPT, outputStream.toString());
+        interpreter.run(new String[]{commandName + STATEMENT_DELIMITER + commandName});
+        assertEquals(testOutput + newLine + testOutput + newLine + exitWarning + newLine, outputStream.toString());
     }
 
     @Test
-    public void interpreterInteractiveModeNoSuchCommand() {
-        Interpreter interpreter = new Interpreter(new Command[]{},
-                new ByteArrayInputStream((commandName + newLine + "exit" + newLine).getBytes()),
-                printStream, printStream);
+    public void interpreterBatchModeCorrectCommandWithSaving() throws IOException {
+        InterpreterState state = new TestInterpreterState(new ByteArrayInputStream(new byte[]{}), printStream,
+                printStream, true);
+        Interpreter interpreter = new Interpreter(new Command[]{new TestCommand(state, 0)}, state);
+
+        interpreter.run(new String[]{commandName + STATEMENT_DELIMITER + commandName});
+        assertEquals(testOutput + newLine + testOutput + newLine, outputStream.toString());
+    }
+
+    @Test(expected = InputMistakeException.class)
+    public void interpreterBatchModeWrongCommand() throws IOException {
+        InterpreterState state = new TestInterpreterState(new ByteArrayInputStream(new byte[]{}), printStream,
+                printStream, true);
+        Interpreter interpreter = new Interpreter(new Command[]{}, state);
+
+        interpreter.run(new String[]{"wrong command"});
+    }
+
+    @Test
+    public void interpreterInteractiveModeNoSuchCommand() throws IOException {
+        InterpreterState state = new TestInterpreterState(new ByteArrayInputStream((commandName + newLine).getBytes()),
+                printStream, printStream, true);
+        Interpreter interpreter = new Interpreter(new Command[]{}, state);
 
         interpreter.run(new String[]{});
         assertEquals(PROMPT + "No such command: " + commandName + newLine + PROMPT, outputStream.toString());
     }
 
     @Test
-    public void interpreterInteractiveModeTooManyArguments() {
-        Interpreter interpreter = new Interpreter(new Command[]{new TestCommand(new Object(), 0)},
-                new ByteArrayInputStream((commandName + " abcd" + newLine + "exit" + newLine).getBytes()),
-                printStream, printStream);
+    public void interpreterInteractiveModeTooManyArguments() throws IOException {
+        InterpreterState state = new TestInterpreterState(
+                new ByteArrayInputStream((commandName + " abcd" + newLine).getBytes()), printStream, printStream, true);
+        Interpreter interpreter = new Interpreter(new Command[]{new TestCommand(state, 0)}, state);
 
         interpreter.run(new String[]{});
         assertEquals(PROMPT + commandName + ": too many arguments" + newLine + PROMPT, outputStream.toString());
     }
 
     @Test
-    public void interpreterInteractiveModeNotEnoughArguments()  {
-        Interpreter interpreter = new Interpreter(new Command[]{new TestCommand(new Object(), 1)},
-                new ByteArrayInputStream((commandName + newLine + "exit" + newLine).getBytes()),
-                printStream, printStream);
+    public void interpreterInteractiveModeNotEnoughArguments() throws IOException {
+        InterpreterState state = new TestInterpreterState(new ByteArrayInputStream((commandName + newLine).getBytes()),
+                printStream, printStream, true);
+        Interpreter interpreter = new Interpreter(new Command[]{new TestCommand(state, 1)}, state);
 
         interpreter.run(new String[]{});
         assertEquals(PROMPT + commandName + ": not enough arguments" + newLine + PROMPT, outputStream.toString());
     }
 
     @Test
-    public void interpreterInteractiveModeLaunchCommandWithMistake()  {
-        Interpreter interpreter = new Interpreter(new Command[]{new TestTableCommandWithException(new Object())},
-                new ByteArrayInputStream((command2Name + newLine + "exit" + newLine).getBytes()),
-                printStream, printStream);
+    public void interpreterInteractiveModeLaunchCommandWithMistake() throws IOException {
+        InterpreterState state = new TestInterpreterState(new ByteArrayInputStream((command2Name + newLine).getBytes()),
+                printStream, printStream, true);
+        Interpreter interpreter = new Interpreter(new Command[]{new TestTableCommandWithException(state, 0)}, state);
 
         interpreter.run(new String[]{});
         assertEquals(PROMPT + "exception" + newLine + PROMPT, outputStream.toString());
+    }
+
+    @Test
+    public void interpreterInteractiveModeExit() throws IOException { // Check that "commandName" is not executed
+        InterpreterState state = new TestInterpreterState(
+                new ByteArrayInputStream(("exit" + newLine + commandName + newLine).getBytes()), printStream,
+                printStream, true);
+        Interpreter interpreter = new Interpreter(new Command[]{new TestCommand(state, 0)}, state);
+
+        interpreter.run(new String[]{});
+        assertEquals(PROMPT, outputStream.toString());
     }
 }

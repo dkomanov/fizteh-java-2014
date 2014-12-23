@@ -1,15 +1,15 @@
 package ru.fizteh.fivt.students.pavel_voropaev.project.interpreter;
 
-public abstract class AbstractCommand<Type> implements Command {
+public abstract class AbstractCommand implements Command {
 
     private final String name;
     private final int argNum;
-    protected final Type context;
+    protected InterpreterState state;
 
-    protected AbstractCommand(String name, int argNum, Type context) {
+    protected AbstractCommand(String name, int argNum, InterpreterState state) {
         this.name = name;
         this.argNum = argNum;
-        this.context = context;
+        this.state = state;
     }
 
     @Override

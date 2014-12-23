@@ -4,53 +4,44 @@ import ru.fizteh.fivt.students.pavel_voropaev.project.Utils;
 import ru.fizteh.fivt.students.pavel_voropaev.project.custom_exceptions.InputMistakeException;
 import ru.fizteh.fivt.students.pavel_voropaev.project.custom_exceptions.StopInterpretationException;
 
-import java.io.InputStream;
-import java.io.PrintStream;
+import java.io.IOException;
+import java.text.ParseException;
 import java.util.*;
 
 public class Interpreter {
     private static final String PROMPT = "$ ";
     private static final String STATEMENT_DELIMITER = ";";
-    private static final String PARAM_REGEXP = "\\S+";
 
-    private InputStream in;
-    private PrintStream out;
-    private PrintStream err;
-
+    private InterpreterState state;
     private final Map<String, Command> commands;
 
     // Provides you the ability to stop interpretation even if you forgot to include custom exit.
-    public class DefaultExit extends AbstractCommand<Object> {
-        public DefaultExit() {
-            super("exit", 0, new Object());
+    public class DefaultExit extends AbstractCommand {
+        public DefaultExit(InterpreterState state) {
+            super("exit", 0, state);
         }
+
         @Override
-        public void exec(String[] param, PrintStream out) {
+        public void exec(String[] param) {
         }
     }
 
-    public Interpreter(Command[] commands, InputStream in, PrintStream out, PrintStream err) {
-        if (in == null || out == null || err == null) {
+    public Interpreter(Command[] commands, InterpreterState state) {
+        if (state.getInputStream() == null || state.getOutputStream() == null || state.getErrorStream() == null) {
             throw new IllegalArgumentException("One of the iostreams is not initialized");
         }
 
-        this.in = in;
-        this.out = out;
-        this.err = err;
+        this.state = state;
         this.commands = new HashMap<>();
         for (Command command : commands) {
             this.commands.put(command.getName(), command);
         }
         if (!this.commands.containsKey("exit")) {
-            this.commands.put("exit", new DefaultExit());
+            this.commands.put("exit", new DefaultExit(state));
         }
     }
 
-    public Interpreter(Command[] commands) {
-        this(commands, System.in, System.out, System.err);
-    }
-
-    public void run(String[] args) {
+    public void run(String[] args) throws IOException {
         if (args.length == 0) {
             try {
                 runInteractiveMode();
@@ -62,36 +53,45 @@ public class Interpreter {
         }
     }
 
-    private void runBatchMode(String[] args) {
+    private void runBatchMode(String[] args) throws IOException {
         try {
             executeLine(String.join(" ", args));
-            err.println("Exit without saving!");
+            if (!state.isExitSafe()) {
+                state.getErrorStream().println("Exit without saving!");
+            }
         } catch (StopInterpretationException e) {
             // Exit with saving.
         }
     }
 
     private void runInteractiveMode() throws StopInterpretationException {
-        Scanner scan = new Scanner(in);
+        Scanner scan = new Scanner(state.getInputStream());
         while (true) {
-            out.print(PROMPT);
+            state.getOutputStream().print(PROMPT);
             try {
                 String line = scan.nextLine();
                 executeLine(line);
             } catch (NoSuchElementException e) {
-                err.println("Exit without saving!");
+                if (!state.isExitSafe()) {
+                    state.getErrorStream().println("Exit without saving!");
+                }
                 break;
-            } catch (InputMistakeException e) {
-                err.println(e.getMessage());
+            } catch (IOException | InputMistakeException e) {
+                state.getErrorStream().println(e.getMessage());
             }
         }
         scan.close();
     }
 
-    private void executeLine(String line) throws StopInterpretationException {
+    private void executeLine(String line) throws StopInterpretationException, IOException {
         String[] statements = line.split(STATEMENT_DELIMITER);
+        String[] chunks;
         for (String statement : statements) {
-            String[] chunks = Utils.findAll(PARAM_REGEXP, statement);
+            try {
+                chunks = Utils.splitArguments(statement);
+            } catch (ParseException e) {
+                throw new InputMistakeException("Wrong command: " + e.getMessage());
+            }
 
             if (chunks.length > 0) {
                 String commandName = chunks[0];
@@ -108,7 +108,7 @@ public class Interpreter {
                     throw new InputMistakeException(commandName + ": not enough arguments");
                 }
 
-                command.exec(params, out);
+                command.exec(params);
 
                 if (commandName.equals("exit")) {
                     throw new StopInterpretationException();
