@@ -25,4 +25,7 @@ public class FancyTable extends Table {
             }
         }
     }
+    public boolean myGet(int dir, int file, String key) {
+        return databases[dir][file].data.get(key) != null;
+    }
 }

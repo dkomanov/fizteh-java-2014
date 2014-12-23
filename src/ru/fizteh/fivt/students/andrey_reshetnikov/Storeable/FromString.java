@@ -41,8 +41,8 @@ public class FromString {
             }
         }
         String[] tokens = s.split("\\s+", 0);
-        if (Command.COMMANDS.containsKey(tokens[0])) {
-            Command command = Command.COMMANDS.get(tokens[0]);
+        if (MyCommands.COMMANDS.containsKey(tokens[0])) {
+            Command command = MyCommands.COMMANDS.get(tokens[0]);
             if (tokens.length - 1 != command.numberOfArguments()) {
                 throw new Exception("Unexpected number of arguments: " + command.numberOfArguments() + " required");
             }

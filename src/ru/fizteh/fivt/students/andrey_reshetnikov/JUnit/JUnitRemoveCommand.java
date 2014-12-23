@@ -23,7 +23,7 @@ public class JUnitRemoveCommand extends JUnitCommand {
             int hashCode = Math.abs(key.hashCode());
             int dir = hashCode % ConstClass.NUM_DIRECTORIES;
             int file = hashCode / ConstClass.NUM_FILES % ConstClass.NUM_FILES;
-            if (base.getUsing().getDirtyTable().databases[dir][file].data.get(key) != null) {
+            if (base.getUsing().getDirtyTable().myGet(dir, file, key)) {
                 remove.executeOnTable(base.getUsing().getDirtyTable());
                 base.getUsing().changes.add(remove);
             } else {
