@@ -18,8 +18,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class ThreadSafeDatabaseTableProvider implements TableProvider, AutoCloseable {
 
@@ -29,7 +28,7 @@ public class ThreadSafeDatabaseTableProvider implements TableProvider, AutoClose
     private ThreadSafeDatabaseTable currentTable = null;
     HashMap<String, ThreadSafeDatabaseTable> tables =
             new HashMap<String, ThreadSafeDatabaseTable>();
-    private final Lock tableLock = new ReentrantLock(true);
+    private ReentrantReadWriteLock tableLock = new ReentrantReadWriteLock(true);
     protected TableState state;
 
     public ThreadSafeDatabaseTableProvider(String directory) {
@@ -71,9 +70,14 @@ public class ThreadSafeDatabaseTableProvider implements TableProvider, AutoClose
     @Override
     public List<String> getTableNames() {
         state.checkOperationCorrect();
-        List<String> names = new ArrayList<String>();
-        for (String name : tables.keySet()) {
-            names.add(name);
+        List<String> names = new ArrayList<>();
+        tableLock.readLock().lock();
+        try {
+            for (String name : tables.keySet()) {
+                names.add(name);
+            }
+        } finally {
+            tableLock.readLock().unlock();
         }
         return names;
     }
@@ -81,7 +85,7 @@ public class ThreadSafeDatabaseTableProvider implements TableProvider, AutoClose
     @Override
     public Table getTable(String name) {
         state.checkOperationCorrect();
-        tableLock.lock();
+        tableLock.readLock().lock();
         try {
                 if (name == null || name.isEmpty()) {
                 throw new IllegalArgumentException("Table's name cannot be empty");
@@ -105,14 +109,14 @@ public class ThreadSafeDatabaseTableProvider implements TableProvider, AutoClose
             return table;
 
         } finally {
-            tableLock.unlock();
+            tableLock.readLock().unlock();
         }
     }
 
     @Override
     public Table createTable(String name, List<Class<?>> columnTypes) throws IOException {
         state.checkOperationCorrect();
-        tableLock.lock();
+        tableLock.writeLock().lock();
         try {
                 if (name == null || name.isEmpty()) {
                 throw new IllegalArgumentException("Table's name cannot be null!");
@@ -134,7 +138,7 @@ public class ThreadSafeDatabaseTableProvider implements TableProvider, AutoClose
             tables.put(name, table);
             return table;
         } finally {
-            tableLock.unlock();
+            tableLock.writeLock().unlock();
         }
     }
 
@@ -240,7 +244,7 @@ public class ThreadSafeDatabaseTableProvider implements TableProvider, AutoClose
     }
 
     public void removeTable(String name) {
-        tableLock.lock();
+        tableLock.writeLock().lock();
         try {
             if (name == null || name.isEmpty()) {
                 throw new IllegalArgumentException(
@@ -257,7 +261,7 @@ public class ThreadSafeDatabaseTableProvider implements TableProvider, AutoClose
             File tableFile = new File(databaseDirectoryPath, name);
             deleteFile(tableFile);
         } finally {
-            tableLock.unlock();
+            tableLock.writeLock().unlock();
         }
     }
 
@@ -276,7 +280,7 @@ public class ThreadSafeDatabaseTableProvider implements TableProvider, AutoClose
     private List<Class<?>> readTableSignature(String tableName) {
         File tableDirectory = new File(databaseDirectoryPath, tableName);
         File signatureFile = new File(tableDirectory, SIGNATURE_FILE);
-        String signature = null;
+        String signature;
         if (!signatureFile.exists()) {
             return null;
         }
