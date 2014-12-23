@@ -202,4 +202,8 @@ public class MyStoreableTableProvider implements TableProvider {
         }
         return getTable(using);
     }
+
+    public String getPath() {
+        return mainDirectory.getPath();
+    }
 }

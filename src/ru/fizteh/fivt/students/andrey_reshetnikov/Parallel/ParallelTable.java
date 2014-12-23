@@ -5,6 +5,7 @@ import ru.fizteh.fivt.storage.structured.Storeable;
 import ru.fizteh.fivt.storage.structured.Table;
 import ru.fizteh.fivt.students.andrey_reshetnikov.Storeable.MyStoreableTable;
 
+import java.io.File;
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.List;
@@ -141,4 +142,9 @@ public class ParallelTable implements Table{
         return originalTable;
     }
 
+    public String getPath() {
+        File providerFile = new File(parallelTableProvider.getPath());
+        File table = new File(providerFile, getName());
+        return table.getPath();
+    }
 }
