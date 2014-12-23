@@ -1,10 +1,10 @@
-package ru.fizteh.fivt.students.deserg.junit.test;
+package ru.fizteh.fivt.students.deserg.storable.test;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import ru.fizteh.fivt.students.deserg.junit.DbTableProviderFactory;
-import ru.fizteh.fivt.students.deserg.junit.Shell;
+import ru.fizteh.fivt.students.deserg.storable.DbTableProviderFactory;
+import ru.fizteh.fivt.students.deserg.storable.Shell;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -51,7 +51,6 @@ public class TableProviderFactoryTest {
             assertNotNull(factory.create(name));
         } catch (Exception ex) {
             System.out.println(ex.getMessage());
-            System.exit(1);
         }
 
     }
@@ -61,23 +60,45 @@ public class TableProviderFactoryTest {
 
         DbTableProviderFactory factory = new DbTableProviderFactory();
 
-        String name = "non.existing.directory";
+        String name = testDir.getFileName() + "/non.existing.directory";
 
-        Path path = testDir.resolve(name);
+        Path homePath = Paths.get("").resolve(System.getProperty("user.dir"));
+        Path path = homePath.resolve(name);
 
         while (Files.exists(path)) {
             name += "/1";
-            path = testDir.resolve(name);
+            path = homePath.resolve(name);
         }
 
         try {
             assertNotNull(factory.create(name));
         } catch (Exception ex) {
             System.out.println(ex.getMessage());
-            System.exit(1);
         }
 
     }
+
+    @Test
+    public void testCreateOther() {
+
+        DbTableProviderFactory factory = new DbTableProviderFactory();
+
+        try {
+            assertNotNull(factory.create(null));
+            assertTrue(false);
+        } catch (Exception ex) {
+            System.out.println(ex.getMessage());
+        }
+
+        try {
+            assertNotNull(factory.create("name\000name"));
+            assertTrue(false);
+        } catch (Exception ex) {
+            System.out.println(ex.getMessage());
+        }
+
+    }
+
 
     @After
     public void finish() {

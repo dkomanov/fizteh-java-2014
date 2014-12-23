@@ -1,15 +1,14 @@
-package ru.fizteh.fivt.students.deserg.junit.commands;
+package ru.fizteh.fivt.students.deserg.storable.commands;
 
-import ru.fizteh.fivt.students.deserg.junit.DbTable;
-import ru.fizteh.fivt.students.deserg.junit.DbTableProvider;
+import ru.fizteh.fivt.students.deserg.storable.DbTable;
+import ru.fizteh.fivt.students.deserg.storable.DbTableProvider;
 
 import java.util.ArrayList;
 
 /**
  * Created by deserg on 27.11.14.
  */
-
-public class TableSize implements Command {
+public class TableRollback implements Command {
 
     @Override
     public void execute(ArrayList<String> args, DbTableProvider db) {
@@ -18,7 +17,7 @@ public class TableSize implements Command {
 
             DbTable table = db.getCurrentTable();
 
-            System.out.println(table.size());
+            System.out.println(table.rollback());
 
 
         } else {

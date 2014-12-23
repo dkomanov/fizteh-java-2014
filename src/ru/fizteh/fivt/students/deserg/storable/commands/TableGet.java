@@ -1,8 +1,9 @@
-package ru.fizteh.fivt.students.deserg.junit.commands;
+package ru.fizteh.fivt.students.deserg.storable.commands;
 
-import ru.fizteh.fivt.students.deserg.junit.DbTable;
-import ru.fizteh.fivt.students.deserg.junit.DbTableProvider;
-import ru.fizteh.fivt.students.deserg.junit.MyException;
+import ru.fizteh.fivt.students.deserg.storable.DbTable;
+import ru.fizteh.fivt.students.deserg.storable.DbTableProvider;
+import ru.fizteh.fivt.students.deserg.storable.MyException;
+import ru.fizteh.fivt.students.deserg.storable.Serializer;
 
 import java.util.ArrayList;
 
@@ -26,7 +27,7 @@ public class TableGet implements Command {
             }
 
             String key = args.get(1);
-            String value = table.get(key);
+            String value = Serializer.serialize(table, table.get(key));
             if (value != null) {
                 System.out.println("found\n" + value);
             } else {

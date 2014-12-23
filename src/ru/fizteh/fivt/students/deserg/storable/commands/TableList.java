@@ -1,7 +1,7 @@
-package ru.fizteh.fivt.students.deserg.junit.commands;
+package ru.fizteh.fivt.students.deserg.storable.commands;
 
-import ru.fizteh.fivt.students.deserg.junit.DbTable;
-import ru.fizteh.fivt.students.deserg.junit.DbTableProvider;
+import ru.fizteh.fivt.students.deserg.storable.DbTable;
+import ru.fizteh.fivt.students.deserg.storable.DbTableProvider;
 
 import java.util.ArrayList;
 import java.util.List;

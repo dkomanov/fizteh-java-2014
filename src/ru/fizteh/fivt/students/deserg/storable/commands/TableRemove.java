@@ -1,23 +1,23 @@
-package ru.fizteh.fivt.students.deserg.junit.commands;
+package ru.fizteh.fivt.students.deserg.storable.commands;
 
-import ru.fizteh.fivt.students.deserg.junit.DbTable;
-import ru.fizteh.fivt.students.deserg.junit.DbTableProvider;
-import ru.fizteh.fivt.students.deserg.junit.MyException;
+import ru.fizteh.fivt.students.deserg.storable.DbTable;
+import ru.fizteh.fivt.students.deserg.storable.DbTableProvider;
+import ru.fizteh.fivt.students.deserg.storable.MyException;
 
 import java.util.ArrayList;
 
 /**
  * Created by deserg on 03.10.14.
  */
-public class TablePut implements Command {
+public class TableRemove implements Command {
 
     @Override
     public void execute(ArrayList<String> args, DbTableProvider db) {
 
-        if (args.size() < 3) {
+        if (args.size() < 2) {
             throw new MyException("Not enough arguments");
         }
-        if (args.size() == 3) {
+        if (args.size() == 2) {
 
             DbTable table = db.getCurrentTable();
             if (table == null) {
@@ -26,13 +26,11 @@ public class TablePut implements Command {
             }
 
             String key = args.get(1);
-            String value = args.get(2);
 
-            if (table.put(key, value) != null) {
-                System.out.println("overwrite");
+            if (table.remove(key) == null) {
+                System.out.println("not found");
             } else {
-                System.out.println("new");
-
+                System.out.println("removed");
             }
 
         } else {
@@ -40,4 +38,5 @@ public class TablePut implements Command {
         }
 
     }
+
 }

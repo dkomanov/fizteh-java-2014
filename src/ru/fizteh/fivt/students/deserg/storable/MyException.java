@@ -1,4 +1,4 @@
-package ru.fizteh.fivt.students.deserg.junit;
+package ru.fizteh.fivt.students.deserg.storable;
 
 /**
  * Created by deserg on 04.10.14.
