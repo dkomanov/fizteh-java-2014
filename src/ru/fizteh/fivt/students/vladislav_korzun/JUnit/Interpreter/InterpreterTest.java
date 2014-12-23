@@ -68,7 +68,7 @@ public class InterpreterTest {
     @Test (expected = Exception.class)
     public void badArgumentsinInteractiveModTest() throws Exception {
         Interpreter inter = new Interpreter(null, new Command[] {
-                new Command("test", 1 , new BiConsumer<Object, String[]>() {
+                new Command("test", 1, new BiConsumer<Object, String[]>() {
                     @Override
                     public void accept(Object state, String[] args) {
                         printStream.println("test");

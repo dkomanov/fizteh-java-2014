@@ -54,7 +54,7 @@ public class DataBaseSerializer {
         ByteArrayOutputStream buffer = new ByteArrayOutputStream();
         List<String> keys = new LinkedList<>();
         Byte bt = null;
-        try( RandomAccessFile db = new RandomAccessFile(file, "r")) {
+        try (RandomAccessFile db = new RandomAccessFile(file, "r")) {
             do {
                 do {
                     bt = db.readByte();
