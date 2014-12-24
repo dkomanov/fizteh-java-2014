@@ -43,7 +43,7 @@ public class LoggingInvocationHandler implements InvocationHandler {
 
         try {
             if (loggingWorth(method)) {
-                final String log = serializer.serialize(method, args, returnValue, thrown);
+                final String log = serializer.serialize(method, args, impl.getClass(), returnValue, thrown);
 
                 writerLock.lock();
                 try {

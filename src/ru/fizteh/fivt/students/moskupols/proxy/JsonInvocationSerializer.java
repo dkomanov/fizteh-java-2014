@@ -42,11 +42,12 @@ public class JsonInvocationSerializer implements InvocationSerializer {
     }
 
     @Override
-    public String serialize(Method method, Object[] args, Object returnValue, Throwable thrown) {
+    public String serialize(
+            Method method, Object[] args, Class<?> implClass, Object returnValue, Throwable thrown) {
         JSONObject obj = new JSONObject();
 
         obj.put("timestamp", System.currentTimeMillis());
-        obj.put("class", method.getDeclaringClass().getCanonicalName());
+        obj.put("class", implClass.getCanonicalName());
         obj.put("method", method.getName());
         obj.put("arguments", jsonify(args));
         if (thrown != null) {
@@ -55,6 +56,6 @@ public class JsonInvocationSerializer implements InvocationSerializer {
             obj.put("returnValue", jsonify(returnValue));
         }
 
-        return obj.toString();
+        return obj.toString(4);
     }
 }
