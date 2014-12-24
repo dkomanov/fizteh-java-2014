@@ -19,6 +19,9 @@ public class StoreableValue implements Storeable {
         }
     }
 
+    public StoreableValue() {
+    }
+
     private Object assertColumnType(int columnIndex, Class<?> type) {
         if (types.get(columnIndex) == type) {
             return values.get(columnIndex);
