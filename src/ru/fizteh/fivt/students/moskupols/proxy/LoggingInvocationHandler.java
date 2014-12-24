@@ -4,12 +4,16 @@ import java.io.Writer;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * Created by moskupols on 24.12.14.
  */
 public class LoggingInvocationHandler implements InvocationHandler {
     private final Writer writer;
+    private final Lock writerLock;
+
     private final InvocationSerializer serializer;
     private final Object impl;
     private final Class<?> interfaceToLog;
@@ -20,6 +24,7 @@ public class LoggingInvocationHandler implements InvocationHandler {
         this.serializer = serializer;
         this.impl = impl;
         this.interfaceToLog = interfaceToLog;
+        writerLock = new ReentrantLock();
     }
 
     protected boolean loggingWorth(Method m) {
@@ -27,7 +32,7 @@ public class LoggingInvocationHandler implements InvocationHandler {
     }
 
     @Override
-    public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+    public final Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
         Object returnValue = null;
         Throwable thrown = null;
         try {
@@ -35,11 +40,17 @@ public class LoggingInvocationHandler implements InvocationHandler {
         } catch (InvocationTargetException e) {
             thrown = e.getCause();
         }
+
         try {
             if (loggingWorth(method)) {
                 final String log = serializer.serialize(method, args, returnValue, thrown);
-                // TODO: thread safety
-                writer.write(log);
+
+                writerLock.lock();
+                try {
+                    writer.write(log);
+                } finally {
+                    writerLock.unlock();
+                }
             }
         } finally {
             if (thrown != null) {
