@@ -22,6 +22,14 @@ public class AdvancedTable extends ParallelTable implements Table, AutoCloseable
         closed = new AtomicBoolean(false);
     }
 
+    private Storeable check(Storeable origin) {
+        if (origin instanceof AdvancedStoreableValue) {
+            return origin;
+        } else {
+            return new AdvancedStoreableValue(origin);
+        }
+    }
+
     @Override
     public Storeable put(String key, Storeable value) throws ColumnFormatException {
         checkClosed();
@@ -29,11 +37,7 @@ public class AdvancedTable extends ParallelTable implements Table, AutoCloseable
         if (origin == null) {
             return null;
         } else {
-            if (origin.getClass() == AdvancedStoreableValue.class) {
-                return origin;
-            } else {
-                return new AdvancedStoreableValue(origin);
-            }
+            return check(origin);
         }
     }
 
@@ -44,11 +48,7 @@ public class AdvancedTable extends ParallelTable implements Table, AutoCloseable
         if (origin == null) {
             return null;
         } else {
-            if (origin.getClass() == AdvancedStoreableValue.class) {
-                return origin;
-            } else {
-                return new AdvancedStoreableValue(origin);
-            }
+            return check(origin);
         }
     }
 
@@ -107,11 +107,7 @@ public class AdvancedTable extends ParallelTable implements Table, AutoCloseable
         if (origin == null) {
             return null;
         } else {
-            if (origin.getClass() == AdvancedStoreableValue.class) {
-                return origin;
-            } else {
-                return new AdvancedStoreableValue(origin);
-            }
+            return check(origin);
         }
     }
 

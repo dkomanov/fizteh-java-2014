@@ -3,7 +3,6 @@ package ru.fizteh.fivt.students.andrey_reshetnikov.Proxy;
 import ru.fizteh.fivt.storage.structured.ColumnFormatException;
 import ru.fizteh.fivt.storage.structured.Storeable;
 import ru.fizteh.fivt.storage.structured.Table;
-import ru.fizteh.fivt.storage.structured.TableProvider;
 import ru.fizteh.fivt.students.andrey_reshetnikov.Parallel.ParallelTableProvider;
 import ru.fizteh.fivt.students.andrey_reshetnikov.Storeable.MyStoreableTable;
 
@@ -14,7 +13,7 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-public class AdvancedTableProvider extends ParallelTableProvider implements TableProvider, AutoCloseable {
+public class AdvancedTableProvider extends ParallelTableProvider implements AutoCloseable {
 
     private AtomicBoolean closed;
 
