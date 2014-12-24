@@ -37,15 +37,21 @@ public class JsonInvocationSerializer implements InvocationSerializer {
         return obj;
     }
 
+    protected Object jsonifyThrown(Throwable t) {
+        return t.getClass().getCanonicalName() + ": " + t.getMessage();
+    }
+
     @Override
-    public String serialize(Method method, Object[] args, Object returnValue) {
+    public String serialize(Method method, Object[] args, Object returnValue, Throwable thrown) {
         JSONObject obj = new JSONObject();
 
         obj.put("timestamp", System.currentTimeMillis());
         obj.put("class", method.getDeclaringClass().getCanonicalName());
         obj.put("method", method.getName());
         obj.put("arguments", jsonify(args));
-        if (!method.getReturnType().equals(void.class)) {
+        if (thrown != null) {
+            obj.put("thrown", jsonifyThrown(thrown));
+        } else if (!method.getReturnType().equals(void.class)) {
             obj.put("returnValue", jsonify(returnValue));
         }
 

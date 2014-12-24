@@ -14,6 +14,7 @@ public class LoggingProxyFactoryImpl implements LoggingProxyFactory {
         return Proxy.newProxyInstance(
                 interfaceClass.getClassLoader(),
                 new Class[] {interfaceClass },
-                new LoggingInvocationHandler(writer, new JsonInvocationSerializer(), implementation));
+                new LoggingInvocationHandler(
+                        writer, new JsonInvocationSerializer(), implementation, interfaceClass));
     }
 }

@@ -2,25 +2,25 @@ package ru.fizteh.fivt.students.moskupols.proxy;
 
 import ru.fizteh.fivt.proxy.LoggingProxyFactory;
 
+import java.io.IOException;
 import java.io.StringWriter;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Created by moskupols on 24.12.14.
  */
 public class ProxyMain {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         LoggingProxyFactory proxyFactory = new LoggingProxyFactoryImpl();
         final StringWriter writer = new StringWriter();
         final Object o = proxyFactory.wrap(
                 writer,
-                new HashMap<String, String>(),
-                Map.class);
-        final Map<String, String> stringMap = (Map<String, String>) o;
-        System.out.println(stringMap.put("sdf", "tt"));
-        System.out.println(stringMap.get("sdf"));
-        System.out.println(stringMap.get("ss"));
-        System.out.println(writer.toString());
+                new StringWriter(),
+                Appendable.class);
+        final Appendable w = (Appendable) o;
+        try {
+            w.append("abcde", 123, 22);
+        } finally {
+            System.out.println(writer.toString());
+        }
     }
 }
