@@ -28,7 +28,10 @@ public class LoggingProxyFactoryImpl implements LoggingProxyFactory, SingleWrite
                 interfaceClass.getClassLoader(),
                 new Class[] {interfaceClass },
                 new LoggingInvocationHandler(
-                        writer, new JsonInvocationSerializer(), implementation, interfaceClass));
+                        new LoggerImpl(writer),
+                        new JsonInvocationSerializer(),
+                        implementation,
+                        interfaceClass));
     }
 
     @Override

@@ -1,30 +1,25 @@
 package ru.fizteh.fivt.students.moskupols.proxy;
 
-import java.io.Writer;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * Created by moskupols on 24.12.14.
  */
 public class LoggingInvocationHandler implements InvocationHandler {
-    private final Writer writer;
-    private final Lock writerLock;
+    private final Logger logger;
 
     private final InvocationSerializer serializer;
     private final Object impl;
     private final Class<?> interfaceToLog;
 
     public LoggingInvocationHandler(
-            Writer writer, InvocationSerializer serializer, Object impl, Class<?> interfaceToLog) {
-        this.writer = writer;
+            Logger logger, InvocationSerializer serializer, Object impl, Class<?> interfaceToLog) {
+        this.logger = logger;
         this.serializer = serializer;
         this.impl = impl;
         this.interfaceToLog = interfaceToLog;
-        writerLock = new ReentrantLock();
     }
 
     protected boolean loggingWorth(Method m) {
@@ -43,14 +38,7 @@ public class LoggingInvocationHandler implements InvocationHandler {
 
         try {
             if (loggingWorth(method)) {
-                final String log = serializer.serialize(method, args, impl.getClass(), returnValue, thrown);
-
-                writerLock.lock();
-                try {
-                    writer.write(log);
-                } finally {
-                    writerLock.unlock();
-                }
+                logger.putMessage(serializer.serialize(method, args, impl.getClass(), returnValue, thrown));
             }
         } finally {
             if (thrown != null) {
