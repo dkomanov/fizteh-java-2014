@@ -10,26 +10,26 @@ import java.text.ParseException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
  * Created by moskupols on 14.12.14.
  */
-public class ThreadSafeCachingTableProvider implements TableProvider {
+public class ThreadSafeCachingTableProvider implements CachingTableProvider {
     private final TableProvider delegate;
     private final Map<String, Table> tableMap;
-    Lock tableMapLock;
+    ReadWriteLock tableMapLock;
 
     public ThreadSafeCachingTableProvider(TableProvider delegate) {
         this.delegate = delegate;
         tableMap = new HashMap<>();
-        tableMapLock = new ReentrantLock();
+        tableMapLock = new ReentrantReadWriteLock();
     }
 
     @Override
     public Table getTable(String name) {
-        tableMapLock.lock();
+        tableMapLock.writeLock().lock();
         Table ret;
         try {
             ret = tableMap.get(name);
@@ -40,14 +40,14 @@ public class ThreadSafeCachingTableProvider implements TableProvider {
                 }
             }
         } finally {
-            tableMapLock.unlock();
+            tableMapLock.writeLock().unlock();
         }
         return ret;
     }
 
     @Override
     public Table createTable(String name, List<Class<?>> columnTypes) throws IOException {
-        tableMapLock.lock();
+        tableMapLock.writeLock().lock();
         Table ret;
         try {
             if (tableMap.containsKey(name)) {
@@ -56,20 +56,42 @@ public class ThreadSafeCachingTableProvider implements TableProvider {
             ret = delegate.createTable(name, columnTypes);
             tableMap.put(name, ret);
         } finally {
-            tableMapLock.unlock();
+            tableMapLock.writeLock().unlock();
         }
         return ret;
     }
 
     @Override
     public void removeTable(String name) throws IOException {
-        tableMapLock.lock();
+        tableMapLock.writeLock().lock();
         try {
             delegate.removeTable(name);
             tableMap.remove(name);
         } finally {
-            tableMapLock.unlock();
+            tableMapLock.writeLock().unlock();
         }
+    }
+
+    @Override
+    public void releaseTable(String name) {
+        tableMapLock.writeLock().lock();
+        try {
+            tableMap.remove(name);
+        } finally {
+            tableMapLock.writeLock().unlock();
+        }
+    }
+
+    @Override
+    public List<String> getTableNames() {
+        final List<String> tableNames;
+        tableMapLock.readLock().lock();
+        try {
+            tableNames = delegate.getTableNames();
+        } finally {
+            tableMapLock.readLock().unlock();
+        }
+        return tableNames;
     }
 
     @Override
@@ -90,10 +112,5 @@ public class ThreadSafeCachingTableProvider implements TableProvider {
     @Override
     public Storeable createFor(Table table, List<?> values) throws ColumnFormatException, IndexOutOfBoundsException {
         return delegate.createFor(table, values);
-    }
-
-    @Override
-    public List<String> getTableNames() {
-        return delegate.getTableNames();
     }
 }
