@@ -46,6 +46,7 @@ public class JsonInvocationSerializer implements InvocationSerializer {
     public String serialize(
             Method method, Object[] args, Class<?> implClass, Object returnValue, Throwable thrown) {
         JSONObject obj = new JSONObject();
+        final String ret;
 
         try {
             obj.put("timestamp", System.currentTimeMillis()).
@@ -57,10 +58,11 @@ public class JsonInvocationSerializer implements InvocationSerializer {
             } else if (!method.getReturnType().equals(void.class)) {
                 obj.put("returnValue", jsonify(returnValue));
             }
+            ret = obj.toString(4);
         } catch (JSONException e) {
             throw new RuntimeException(e);
         }
 
-        return obj.toString(4);
+        return ret;
     }
 }
