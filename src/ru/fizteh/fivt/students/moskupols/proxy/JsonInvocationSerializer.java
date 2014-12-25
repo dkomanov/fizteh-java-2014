@@ -1,6 +1,7 @@
 package ru.fizteh.fivt.students.moskupols.proxy;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.lang.reflect.Array;
@@ -46,14 +47,18 @@ public class JsonInvocationSerializer implements InvocationSerializer {
             Method method, Object[] args, Class<?> implClass, Object returnValue, Throwable thrown) {
         JSONObject obj = new JSONObject();
 
-        obj.put("timestamp", System.currentTimeMillis());
-        obj.put("class", implClass.getCanonicalName());
-        obj.put("method", method.getName());
-        obj.put("arguments", jsonify(args));
-        if (thrown != null) {
-            obj.put("thrown", jsonifyThrown(thrown));
-        } else if (!method.getReturnType().equals(void.class)) {
-            obj.put("returnValue", jsonify(returnValue));
+        try {
+            obj.put("timestamp", System.currentTimeMillis()).
+                    put("class", implClass.getCanonicalName()).
+                    put("method", method.getName()).
+                    put("arguments", jsonify(args));
+            if (thrown != null) {
+                obj.put("thrown", jsonifyThrown(thrown));
+            } else if (!method.getReturnType().equals(void.class)) {
+                obj.put("returnValue", jsonify(returnValue));
+            }
+        } catch (JSONException e) {
+            throw new RuntimeException(e);
         }
 
         return obj.toString(4);
