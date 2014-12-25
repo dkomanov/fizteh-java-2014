@@ -1,7 +1,5 @@
 package ru.fizteh.fivt.students.moskupols.proxy;
 
-import ru.fizteh.fivt.proxy.LoggingProxyFactory;
-
 import java.io.IOException;
 import java.io.StringWriter;
 
@@ -10,10 +8,9 @@ import java.io.StringWriter;
  */
 public class ProxyMain {
     public static void main(String[] args) throws IOException {
-        LoggingProxyFactory proxyFactory = new LoggingProxyFactoryImpl();
         final StringWriter writer = new StringWriter();
+        SingleWriterLoggingProxyFactory proxyFactory = new LoggingProxyFactoryImpl(writer);
         final Object o = proxyFactory.wrap(
-                writer,
                 new StringWriter(),
                 Appendable.class);
         final Appendable w = (Appendable) o;
