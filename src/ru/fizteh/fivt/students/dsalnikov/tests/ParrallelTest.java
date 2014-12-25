@@ -44,7 +44,7 @@ public class ParrallelTest {
             testTable.put("firstKey", testStoreable);
             try {
                 for (int i = 0; i < 100000000; ++i) {
-
+                    //do nothing
                 }
                 testTable.commit();
             } catch (IOException e) {
@@ -56,7 +56,7 @@ public class ParrallelTest {
             testTable.put("secondKey", testStoreable);
             try {
                 for (int i = 0; i < 100000000; ++i) {
-
+                    //do nothing
                 }
                 testTable.commit();
             } catch (IOException e) {
