@@ -5,21 +5,46 @@ import ru.fizteh.fivt.students.dsalnikov.utils.ShellState;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.PrintStream;
 import java.nio.file.FileAlreadyExistsException;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Scanner;
 
 public class Shell<State extends ShellState> {
 
+    private final Parser parser;
     private ShellState state;
-    private Map<String, Command> commandMap = new HashMap<String, Command>();
+    private Map<String, Command> commandMap = new HashMap<>();
+    private InputStream inputStream;
+    private PrintStream outputStream;
+    private PrintStream errorStream;
+
 
     //годный шелл
-    public Shell() {
+    //стандартные потоки ввода-вывода
+    public Shell(Parser withParser) {
         state = new ShellState();
+        parser = withParser;
+        inputStream = System.in;
+        outputStream = System.out;
+        errorStream = System.err;
     }
 
-    public Shell(State o) {
+    public Shell(Parser withParser, InputStream inputStream, PrintStream outputStream, PrintStream errorStream) {
+        this.inputStream = inputStream;
+        this.outputStream = outputStream;
+        this.errorStream = errorStream;
+        state = new ShellState();
+        parser = withParser;
+    }
+
+
+    public Shell(State o, Parser withParser) {
         state = o;
+        parser = withParser;
     }
 
     public void setCommands(List<Command> cs) throws IllegalArgumentException {
@@ -32,41 +57,29 @@ public class Shell<State extends ShellState> {
     }
 
     public void execute(String[] args) throws Exception {
-        String concatenatedcmds = join(Arrays.asList(args), " ");
-        String[] commands = concatenatedcmds.split("\\s*;\\s*");
+        String[] commands = parser.parseCommandArguments(args);
         for (String command : commands) {
-            String[] cmdArgs = command.trim().split("\\s+");
-            if (cmdArgs.length == 0 || cmdArgs[0].equals("")) {
-                continue;
-            } else {
+            String[] cmdArgs =
+                    parser.splitSingleCommandByDelimeter(command);
+            if (!(cmdArgs.length == 0 || cmdArgs[0].equals(""))) {
                 Command c = commandMap.get(cmdArgs[0]);
                 if (c == null) {
                     throw new IllegalArgumentException("no such Command declared: " + cmdArgs[0]);
                 }
-                c.execute(cmdArgs);
+                if (c.getArgsCount() != cmdArgs.length - 1) {
+                    throw new IllegalArgumentException(
+                            String.format("%s command: wrong amount of arguments", c.getName()));
+                }
+                c.execute(cmdArgs, inputStream, outputStream);
             }
         }
     }
 
-    public static String join(Collection<?> objects, String separator) {
-        StringBuilder sb = new StringBuilder();
-        boolean first = true;
-        for (Object o : objects) {
-            if (!first) {
-                sb.append(separator);
-            } else {
-                first = false;
-            }
-            sb.append(o.toString());
-        }
-        return (sb.toString());
-    }
-
-    public void batchMode() throws Exception {
+    public void interactiveMode() throws Exception {
         boolean flag = true;
-        Scanner sc = new Scanner(System.in);
+        Scanner sc = new Scanner(inputStream);
         while (flag) {
-            System.out.print("$ ");
+            outputStream.print("$ ");
 
             String[] cmd = new String[1];
 
@@ -77,48 +90,62 @@ public class Shell<State extends ShellState> {
             try {
                 this.execute(cmd);
             } catch (FileAlreadyExistsException fae) {
-                System.err.println(fae.getMessage());
+                errorStream.println(fae.getMessage());
             } catch (FileNotFoundException fnf) {
-                System.err.println(fnf.getMessage());
+                errorStream.println(fnf.getMessage());
             } catch (IOException ioe) {
-                System.err.println(ioe.getMessage());
+                errorStream.println(ioe.getMessage());
             } catch (IllegalArgumentException iae) {
-                System.err.println(iae.getMessage());
+                errorStream.println(iae.getMessage());
             } catch (RuntimeException e) {
-                System.err.println(e.getMessage());
+                errorStream.println(e.getMessage());
             } catch (Exception e) {
-                System.err.println(e.getMessage());
+                errorStream.println(e.getMessage());
             }
         }
     }
 
-    public void commandMode(String[] args) throws Exception {
+    public void batchMode(String[] args) throws Exception {
         try {
             this.execute(args);
         } catch (FileAlreadyExistsException fae) {
-            System.err.println(fae.getMessage());
+            errorStream.println(fae.getMessage());
             System.exit(1);
         } catch (FileNotFoundException fnf) {
-            System.err.println(fnf.getMessage());
+            errorStream.println(fnf.getMessage());
             System.exit(1);
         } catch (IOException ioe) {
-            System.err.println(ioe.getMessage());
+            errorStream.println(ioe.getMessage());
             System.exit(1);
         } catch (IllegalArgumentException iae) {
-            System.err.println(iae.getMessage());
+            errorStream.println(iae.getMessage());
             System.exit(1);
         } catch (RuntimeException e) {
             e.getMessage();
             System.exit(1);
         } catch (Exception e) {
-            System.err.println(e.getMessage());
+            errorStream.println(e.getMessage());
             System.exit(1);
         }
+    }
+
+    public void run(String[] args) {
+        try {
+            if (args.length == 0) {
+                interactiveMode();
+            } else {
+                batchMode(args);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void run(String args) {
+        run(parser.splitStringArgsByDelimeter(args));
     }
 
     public ShellState getState() {
         return state;
     }
 }
-
-

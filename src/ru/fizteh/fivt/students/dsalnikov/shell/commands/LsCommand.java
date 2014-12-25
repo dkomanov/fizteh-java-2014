@@ -1,38 +1,29 @@
 package ru.fizteh.fivt.students.dsalnikov.shell.commands;
 
-import ru.fizteh.fivt.students.dsalnikov.utils.ShellState;
 import ru.fizteh.fivt.students.dsalnikov.shell.Shell;
+import ru.fizteh.fivt.students.dsalnikov.utils.ShellState;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.PrintStream;
 
 
-public class LsCommand implements Command {
+public class LsCommand extends AbstractCommand {
 
     private Shell link;
 
     public LsCommand(Shell s) {
+        super("ls", 0);
         link = s;
     }
 
-    public String getName() {
-        return "ls";
-    }
-
-    public int getArgsCount() {
-        return 0;
-    }
-
-    public void execute(String[] s) throws IOException {
-        if (s.length != 1) {
-            throw new IllegalArgumentException("Incorrect usage of Command ls: wrong amount of arguments");
-        } else {
-            ShellState sh = link.getState();
-            File dir = new File(sh.getState());
-            File[] arr = dir.listFiles();
-            for (File f : arr) {
-                System.out.println(f.getName());
-            }
+    public void execute(String[] s, InputStream inputStream, PrintStream outputStream) throws IOException {
+        ShellState sh = link.getState();
+        File dir = new File(sh.getState());
+        File[] arr = dir.listFiles();
+        for (File f : arr) {
+            outputStream.println(f.getName());
         }
     }
 }

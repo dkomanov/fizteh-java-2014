@@ -1,33 +1,27 @@
 package ru.fizteh.fivt.students.dsalnikov.filemap.commands;
 
 import ru.fizteh.fivt.students.dsalnikov.filemap.Table;
-import ru.fizteh.fivt.students.dsalnikov.shell.commands.Command;
+import ru.fizteh.fivt.students.dsalnikov.shell.commands.AbstractCommand;
 
-public class ExitCommand implements Command {
+import java.io.InputStream;
+import java.io.PrintStream;
+
+public class ExitCommand extends AbstractCommand {
 
     private Table db;
 
     public ExitCommand(Table table) {
+        super("exit", 0);
         db = table;
     }
 
     @Override
-    public void execute(String[] args) throws Exception {
-        if (args.length != 1) {
-            throw new IllegalArgumentException("wrong amount of arguments");
-        } else {
-            db.exit();
-            System.exit(0);
+    public void execute(String[] args, InputStream inputStream, PrintStream outputStream) throws Exception {
+        int changesNumber = db.exit();
+        if (changesNumber > 0) {
+            outputStream.println(String.format("there are %s + uncommitted changes. Do something", changesNumber));
+            return;
         }
-    }
-
-    @Override
-    public String getName() {
-        return "exit";
-    }
-
-    @Override
-    public int getArgsCount() {
-        return 1;
+        System.exit(0);
     }
 }

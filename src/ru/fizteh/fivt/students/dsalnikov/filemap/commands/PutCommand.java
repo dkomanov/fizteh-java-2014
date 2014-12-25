@@ -1,32 +1,28 @@
 package ru.fizteh.fivt.students.dsalnikov.filemap.commands;
 
 import ru.fizteh.fivt.students.dsalnikov.filemap.Table;
-import ru.fizteh.fivt.students.dsalnikov.shell.commands.Command;
+import ru.fizteh.fivt.students.dsalnikov.shell.commands.AbstractCommand;
 
-public class PutCommand implements Command {
+import java.io.InputStream;
+import java.io.PrintStream;
+
+public class PutCommand extends AbstractCommand {
 
     private Table db;
 
     public PutCommand(Table t) {
+        super("put", 2);
         db = t;
     }
 
     @Override
-    public void execute(String[] args) throws Exception {
-        if (args.length != 3) {
-            throw new IllegalArgumentException("wrong amount of arguments");
+    public void execute(String[] args, InputStream inputStream, PrintStream outputStream) throws Exception {
+        String result = db.put(args[1], args[2]);
+        if (result == null) {
+            outputStream.println("new");
         } else {
-            db.put(args[1], args[2]);
+            outputStream.println(String.format("overwrite\n'%s'", result));
         }
-    }
 
-    @Override
-    public String getName() {
-        return "put";
-    }
-
-    @Override
-    public int getArgsCount() {
-        return 3;
     }
 }

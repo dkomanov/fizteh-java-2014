@@ -2,27 +2,20 @@ package ru.fizteh.fivt.students.dsalnikov.shell.commands;
 
 import ru.fizteh.fivt.students.dsalnikov.shell.Shell;
 
+import java.io.InputStream;
+import java.io.PrintStream;
 
-public class MvCommand implements Command {
+
+public class MvCommand extends AbstractCommand {
 
     private Shell link;
 
     public MvCommand(Shell s) {
+        super("mv", 2);
         link = s;
     }
 
-    public String getName() {
-        return "mv";
-    }
-
-    public int getArgsCount() {
-        return 2;
-    }
-
-    public void execute(String[] st) throws Exception {
-        if (st.length != 3) {
-            throw new IllegalArgumentException("Incorrect usage of Command mv : wrong amount of arguments");
-        }
+    public void execute(String[] st, InputStream inputStream, PrintStream outputStream) throws Exception {
         String[] rmstr = new String[3];
         String[] cpstr = new String[4];
         cpstr[1] = "-r";
@@ -32,7 +25,7 @@ public class MvCommand implements Command {
         rmstr[1] = "-r";
         CpCommand cp = new CpCommand(link);
         RmCommand rm = new RmCommand(link);
-        cp.execute(cpstr);
-        rm.execute(rmstr);
+        cp.execute(cpstr, inputStream, System.out);
+        rm.execute(rmstr, inputStream, System.out);
     }
 }

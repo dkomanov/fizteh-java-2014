@@ -1,26 +1,21 @@
 package ru.fizteh.fivt.students.dsalnikov.shell.commands;
 
-import ru.fizteh.fivt.students.dsalnikov.utils.StringUtils;
 import ru.fizteh.fivt.students.dsalnikov.shell.Shell;
+import ru.fizteh.fivt.students.dsalnikov.utils.StringUtils;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.PrintStream;
 import java.nio.file.DirectoryNotEmptyException;
 
-public class RmCommand implements Command {
+public class RmCommand extends AbstractCommand {
 
     private Shell link;
 
     public RmCommand(Shell s) {
+        super("rm", 1);
         link = s;
-    }
-
-    public String getName() {
-        return "rm";
-    }
-
-    public int getArgsCount() {
-        return 1;
     }
 
     private void delete(File f) throws IOException {
@@ -51,7 +46,7 @@ public class RmCommand implements Command {
         }
     }
 
-    public void execute(String[] s) throws IOException {
+    public void execute(String[] s, InputStream inputStream, PrintStream outputStream) throws IOException {
         if (s.length != 2 && s.length != 3) {
             throw new IllegalArgumentException("wrong ammount of args. should be called with one arg");
         } else if (s.length == 2) {

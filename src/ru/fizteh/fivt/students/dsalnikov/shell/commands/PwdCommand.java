@@ -2,27 +2,19 @@ package ru.fizteh.fivt.students.dsalnikov.shell.commands;
 
 import ru.fizteh.fivt.students.dsalnikov.shell.Shell;
 
-public class PwdCommand implements Command {
+import java.io.InputStream;
+import java.io.PrintStream;
+
+public class PwdCommand extends AbstractCommand {
 
     private Shell link;
 
     public PwdCommand(Shell s) {
+        super("pwd", 0);
         link = s;
     }
 
-    public String getName() {
-        return "pwd";
-    }
-
-    public int getArgsCount() {
-        return 0;
-    }
-
-    public void execute(String[] emptyStr) {
-        if (emptyStr.length != 1) {
-            throw new IllegalArgumentException("Incorrect usage of command pwd: wrong amount of arguments");
-        } else {
-            System.out.println(link.getState().getState());
-        }
+    public void execute(String[] emptyStr, InputStream inputStream, PrintStream outputStream) {
+        System.out.println(link.getState().getState());
     }
 }

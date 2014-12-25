@@ -1,23 +1,26 @@
 package ru.fizteh.fivt.students.dsalnikov.filemap;
 
-
+import ru.fizteh.fivt.students.dsalnikov.utils.CountingTools;
 import ru.fizteh.fivt.students.dsalnikov.utils.FileMapUtils;
-import ru.fizteh.fivt.students.dsalnikov.utils.ShellState;
 
 import java.io.File;
-import java.util.Map;
+import java.io.IOException;
+import java.util.*;
 
 
-public class SingleFileTable extends ShellState implements Table {
+public class SingleFileTable implements Table {
 
+    private final File dbfile;
+    private Set<String> deleted;
+    private Map<String, String> changed;
     private Map<String, String> storage;
-    private File dbfile;
+    private int changesCount;
 
     //readToMap from file to map
-    public SingleFileTable() {
+    public SingleFileTable(File file) {
+        dbfile = file;
+        initialize();
         try {
-            String path = System.getProperty("db.file");
-            dbfile = new File(path);
             storage = FileMapUtils.readToMap(dbfile);
         } catch (Throwable exc) {
             System.err.println("file processing failed. Paths might be incorrect");
@@ -25,52 +28,70 @@ public class SingleFileTable extends ShellState implements Table {
         }
     }
 
-    public SingleFileTable(String path) {
-        try {
-            dbfile = new File(path);
-            storage = FileMapUtils.readToMap(dbfile);
-        } catch (Throwable exc) {
-            System.err.println("file processing failed. Paths might be incorrect");
-            System.exit(1);
-        }
+    private void initialize() {
+        changesCount = 0;
+        deleted = new HashSet<>();
+        changed = new HashMap<>();
+    }
+
+    @Override
+    public String getName() {
+        return dbfile.getName();
     }
 
     @Override
     public String get(String key) {
-        String result = storage.get(key);
+        String result;
+        result = changed.get(key);
         if (result == null) {
-            System.out.println("not found");
-        } else {
-            System.out.println(String.format("found\n'%s'", result));
+            if (deleted.contains(key)) {
+                return null;
+            }
+            result = storage.get(key);
         }
         return result;
     }
 
     @Override
     public String put(String key, String value) {
-        String rv = storage.put(key, value);
+        String vl = storage.get(key);
+        String rv = changed.put(key, value);
         if (rv == null) {
-            System.out.println("new");
-        } else {
-            System.out.println(String.format("overwrite\n'%s'", rv));
+            changesCount += 1;
+            if (!deleted.contains(key)) {
+                rv = vl;
+            }
+        }
+        if (vl != null) {
+            deleted.add(key);
         }
         return rv;
     }
 
     @Override
-    public void list() {
-        for (String s : storage.keySet()) {
-            System.out.println(s);
-        }
+    public List<String> list() {
+        List<String> rv = new ArrayList<>();
+        rv.addAll(storage.keySet());
+        return rv;
     }
 
     @Override
     public String remove(String key) {
-        String result = storage.remove(key);
-        if (result == null) {
-            System.out.println("not found");
+        String result = storage.get(key);
+        if (result == null && !deleted.contains(key)) {
+            result = storage.get(key);
+        }
+        if (changed.containsKey(key)) {
+            changesCount -= 1;
+            changed.remove(key);
+            if (storage.containsKey(key)) {
+                deleted.add(key);
+            }
         } else {
-            System.out.println("removed");
+            if (storage.containsKey(key) && !deleted.contains(key)) {
+                deleted.add(key);
+                changesCount += 1;
+            }
         }
         return result;
     }
@@ -86,7 +107,44 @@ public class SingleFileTable extends ShellState implements Table {
         return 0;
     }
 
+    @Override
+    public int getTableDimensions() {
+        return 1;
+    }
+
+    @Override
     public int size() {
-        return storage.size();
+        return CountingTools.countSize(storage, changed, deleted);
+    }
+
+    @Override
+    public int commit() {
+        int result = getChangesCount();
+        deleted.forEach(storage::remove);
+        storage.putAll(changed);
+        try {
+            FileMapUtils.flush(dbfile, storage);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        reset();
+        return result;
+    }
+
+    private void reset() {
+        changed.clear();
+        deleted.clear();
+        changesCount = 0;
+    }
+
+    @Override
+    public int rollback() {
+        int result = getChangesCount();
+        reset();
+        return result;
+    }
+
+    public int getChangesCount() {
+        return CountingTools.countChangesInFileMap(storage, changed, deleted);
     }
 }

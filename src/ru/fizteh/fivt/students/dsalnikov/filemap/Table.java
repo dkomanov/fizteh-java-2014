@@ -1,15 +1,14 @@
 package ru.fizteh.fivt.students.dsalnikov.filemap;
 
-public interface Table {
+import java.util.List;
 
-    String get(String key);
+public interface Table extends ru.fizteh.fivt.storage.strings.Table {
 
-    String put(String key, String value);
-
-    void list();
+    List<String> list();
 
     String remove(String key);
 
     int exit();
-}
 
+    int getTableDimensions();
+}

@@ -11,38 +11,30 @@ public class Main {
     public static void main(String[] args) throws IOException {
 
         ShellState s = new ShellState();
-        Shell<ShellState> shell = new Shell<>(s);
+        Shell<ShellState> shell = new Shell<>(s, new StringParser());
 
         ArrayList<Command> commands = new ArrayList<>();
-        RmCommand rm = new RmCommand(shell);
-        commands.add(rm);
-        CpCommand cp = new CpCommand(shell);
-        commands.add(cp);
-        LsCommand dir = new LsCommand(shell);
-        commands.add(dir);
-        ExitCommand exit = new ExitCommand(shell);
-        commands.add(exit);
-        MvCommand mv = new MvCommand(shell);
-        commands.add(mv);
-        CdCommand cd = new CdCommand(shell);
-        commands.add(cd);
-        PwdCommand pwd = new PwdCommand(shell);
-        commands.add(pwd);
-        MkdirCommand mkdir = new MkdirCommand(shell);
-        commands.add(mkdir);
+        commands.add(new RmCommand(shell));
+        commands.add(new CpCommand(shell));
+        commands.add(new LsCommand(shell));
+        commands.add(new ExitCommand(shell));
+        commands.add(new MvCommand(shell));
+        commands.add(new CdCommand(shell));
+        commands.add(new PwdCommand(shell));
+        commands.add(new MkdirCommand(shell));
         CatCommand cat = new CatCommand(shell);
         commands.add(cat);
         shell.setCommands(commands);
 
         if (args.length == 0) {
             try {
-                shell.batchMode();
+                shell.interactiveMode();
             } catch (Exception e) {
                 System.out.println(e.getMessage());
             }
         } else {
             try {
-                shell.commandMode(args);
+                shell.batchMode(args);
             } catch (Exception e) {
                 System.out.println(e.getMessage());
             }
