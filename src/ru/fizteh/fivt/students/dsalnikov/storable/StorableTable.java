@@ -173,8 +173,8 @@ public class StorableTable implements Table, AutoCloseable, Serializable {
 
     @Override
     public int size() {
-        containerState.canBeSafelyUsed();
         lockForTransactions.lock();
+        containerState.canBeSafelyUsed();
         try {
             return CountingTools.storableCountSize(this.data, transactionChanges.get().getRawTransacttionChanges(),
                     transactionChanges.get().getRawRemoved());
@@ -255,7 +255,7 @@ public class StorableTable implements Table, AutoCloseable, Serializable {
     }
 
     @Override
-    public String toString() {
+    public synchronized String toString() {
         containerState.canBeSafelyUsed();
         if (tableFileDir != null) {
             return getClass().getSimpleName() + "[" + tableFileDir + "]";

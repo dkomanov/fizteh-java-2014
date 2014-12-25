@@ -38,13 +38,13 @@ public class RMIServerImpl implements RMIServer, Serializable {
     }
 
     @Override
-    public void connectUser(ClientState state) {
+    public synchronized void connectUser(ClientState state) {
         connectedClients.add(state);
 
     }
 
     @Override
-    public RemoteTableProvider getTableProvider() {
+    public synchronized RemoteTableProvider getTableProvider() {
         RemoteTableProvider providerToReturn = null;
         try {
             providerToReturn = (RemoteTableProvider) factory.create(path);
@@ -55,7 +55,7 @@ public class RMIServerImpl implements RMIServer, Serializable {
     }
 
     @Override
-    public void disconnectUser(ClientState state) {
+    public synchronized void disconnectUser(ClientState state) {
         //shutdown working thread if active
         if (!connectedClients.contains(state)) {
             throw new IllegalStateException("user isn't not connected");

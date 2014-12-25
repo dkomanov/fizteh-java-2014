@@ -166,18 +166,6 @@ public class DBTableTest {
     }
 
     @Test
-    public void commitTest() {
-        Assert.assertEquals(0, testTableEng.commit());
-        for (int i = 1; i <= 5; ++i) {
-            testTableEng.put("key" + i, "value" + i);
-        }
-        Assert.assertEquals(5, testTableEng.commit());
-        for (int i = 1; i <= 5; ++i) {
-            testTableEng.remove("key" + i);
-        }
-    }
-
-    @Test
     public void commitHardTest() {
         testTableEng.put("key1", "value1");
         testTableEng.put("key2", "value2");

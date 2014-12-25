@@ -18,9 +18,8 @@ public class MultiFileHashMap implements MultiTable {
 
 
     //traverse over all existing tables and count amount of keys
-    public MultiFileHashMap() {
+    public MultiFileHashMap(String path) {
         try {
-            String path = System.getProperty("fizteh.db.dir");
             dbFolder = new File(path);
             tableInfo = new HashMap<>();
             manager = new DBTableProvider(path);
