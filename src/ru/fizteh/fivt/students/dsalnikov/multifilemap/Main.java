@@ -15,7 +15,7 @@ import java.util.List;
 
 public class Main {
     public static void main(String[] args) {
-        MultiTable t = new MultiFileHashMap();
+        MultiTable t = new MultiFileHashMap(System.getProperty("fizteh.db.dir"));
         Shell sh = new Shell(new StringParser());
         List<Command> commands = new ArrayList<>();
         commands.add(new PutCommand(t));
