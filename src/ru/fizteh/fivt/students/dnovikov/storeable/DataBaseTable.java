@@ -10,6 +10,8 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.*;
 import java.util.Map.Entry;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class DataBaseTable implements Table {
     private static final int FILES_COUNT = 16;
@@ -18,11 +20,11 @@ public class DataBaseTable implements Table {
     private List<SingleTable> tableParts;
     private SingleTable[][] parts;
     private DataBaseProvider databaseConnector;
-    private Map<String, Storeable> diffs;
+    private ThreadLocal<Map<String, Storeable>> diffs = ThreadLocal.withInitial(HashMap::new);
+    private ReadWriteLock lock = new ReentrantReadWriteLock(true);
     private ArrayList<Class<?>> types;
 
     public DataBaseTable(String name, DataBaseProvider dbConnector) throws LoadOrSaveException {
-        diffs = new HashMap<>();
         tableName = name;
         tableParts = new ArrayList<>();
         databaseConnector = dbConnector;
@@ -79,21 +81,26 @@ public class DataBaseTable implements Table {
 
     @Override
     public List<String> list() {
-        List<String> result = new ArrayList<>();
-        Set<String> setResult = new HashSet<>();
-        for (SingleTable table : tableParts) {
-            List<String> keys = table.list();
-            setResult.addAll(keys);
-        }
-        for (Entry<String, Storeable> pair : diffs.entrySet()) {
-            if (pair.getValue() == null) {
-                setResult.remove(pair.getKey());
-            } else {
-                setResult.add(pair.getKey());
+        lock.readLock().lock();
+        try {
+            List<String> result = new ArrayList<>();
+            Set<String> setResult = new HashSet<>();
+            for (SingleTable table : tableParts) {
+                List<String> keys = table.list();
+                setResult.addAll(keys);
             }
+            for (Entry<String, Storeable> pair : diffs.get().entrySet()) {
+                if (pair.getValue() == null) {
+                    setResult.remove(pair.getKey());
+                } else {
+                    setResult.add(pair.getKey());
+                }
+            }
+            result.addAll(setResult);
+            return result;
+        } finally {
+            lock.readLock().unlock();
         }
-        result.addAll(setResult);
-        return result;
     }
 
     @Override
@@ -103,17 +110,22 @@ public class DataBaseTable implements Table {
 
     @Override
     public Storeable get(String key) throws IllegalArgumentException {
-        if (key == null) {
-            throw new IllegalArgumentException("error of get: key is null");
+        lock.readLock().lock();
+        try {
+            if (key == null) {
+                throw new IllegalArgumentException("error of get: key is null");
+            }
+            Storeable value;
+            SingleTable table = selectSingleTable(key);
+            if (diffs.get().containsKey(key)) {
+                value = diffs.get().get(key);
+            } else {
+                value = table.get(key);
+            }
+            return value;
+        } finally {
+            lock.readLock().unlock();
         }
-        Storeable value;
-        SingleTable table = selectSingleTable(key);
-        if (diffs.containsKey(key)) {
-            value = diffs.get(key);
-        } else {
-            value = table.get(key);
-        }
-        return value;
     }
 
     public Path getTableDirectory() {
@@ -125,29 +137,34 @@ public class DataBaseTable implements Table {
         if (key == null || value == null) {
             throw new IllegalArgumentException("error of put: key or value is null");
         }
+        lock.readLock().lock();
         try {
-            for (int i = 0; i < types.size(); i++) {
-                if (value.getColumnAt(i) != null && types.get(i) != value.getColumnAt(i).getClass()) {
-                    throw new ColumnFormatException("value: wrong column format");
+            try {
+                for (int i = 0; i < types.size(); i++) {
+                    if (value.getColumnAt(i) != null && types.get(i) != value.getColumnAt(i).getClass()) {
+                        throw new ColumnFormatException("value: wrong column format");
+                    }
                 }
+            } catch (IndexOutOfBoundsException e) {
+                throw new ColumnFormatException("value: wrong column format" + e.getMessage(), e);
             }
-        } catch (IndexOutOfBoundsException e) {
-            throw new ColumnFormatException("value: wrong column format" + e.getMessage(), e);
-        }
-        SingleTable table = selectSingleTable(key);
-        Storeable oldValue;
-        if (!diffs.containsKey(key)) {
-            oldValue = table.get(key);
-            String stringValue = databaseConnector.serialize(this, value);
-            String stringOldValue = databaseConnector.serialize(this, oldValue);
-            if (oldValue != null && stringOldValue.equals(stringValue)) {
-                return oldValue;
+            SingleTable table = selectSingleTable(key);
+            Storeable oldValue;
+            if (!diffs.get().containsKey(key)) {
+                oldValue = table.get(key);
+                String stringValue = databaseConnector.serialize(this, value);
+                String stringOldValue = databaseConnector.serialize(this, oldValue);
+                if (oldValue != null && stringOldValue.equals(stringValue)) {
+                    return oldValue;
+                }
+            } else {
+                oldValue = diffs.get().remove(key);
             }
-        } else {
-            oldValue = diffs.remove(key);
+            diffs.get().put(key, value);
+            return oldValue;
+        } finally {
+            lock.readLock().unlock();
         }
-        diffs.put(key, value);
-        return oldValue;
     }
 
     @Override
@@ -155,19 +172,23 @@ public class DataBaseTable implements Table {
         if (key == null) {
             throw new IllegalArgumentException("error of remove: key is null");
         }
-        SingleTable table = selectSingleTable(key);
-
-        Storeable deleted;
-        if (!diffs.containsKey(key)) {
-            deleted = table.get(key);
-            diffs.put(key, null);
-        } else {
-            deleted = diffs.remove(key);
-            if (table.get(key) != null) {
-                diffs.put(key, null);
+        lock.readLock().lock();
+        try {
+            SingleTable table = selectSingleTable(key);
+            Storeable deleted;
+            if (!diffs.get().containsKey(key)) {
+                deleted = table.get(key);
+                diffs.get().put(key, null);
+            } else {
+                deleted = diffs.get().remove(key);
+                if (table.get(key) != null) {
+                    diffs.get().put(key, null);
+                }
             }
+            return deleted;
+        } finally {
+            lock.readLock().unlock();
         }
-        return deleted;
     }
 
     public void drop() throws LoadOrSaveException {
@@ -184,29 +205,39 @@ public class DataBaseTable implements Table {
 
     @Override
     public int size() {
-        return list().size();
+        lock.readLock().lock();
+        try {
+            return list().size();
+        } finally {
+            lock.readLock().unlock();
+        }
     }
 
     @Override
     public int commit() throws LoadOrSaveException {
-        int changesCount = diffs.size();
-        for (Entry<String, Storeable> entryDiff : diffs.entrySet()) {
-            SingleTable table = selectSingleTable(entryDiff.getKey());
-            if (entryDiff.getValue() == null) {
-                table.remove(entryDiff.getKey());
-            } else {
-                table.put(entryDiff.getKey(), entryDiff.getValue());
+        lock.writeLock().lock();
+        try {
+            int changesCount = diffs.get().size();
+            for (Entry<String, Storeable> entryDiff : diffs.get().entrySet()) {
+                SingleTable table = selectSingleTable(entryDiff.getKey());
+                if (entryDiff.getValue() == null) {
+                    table.remove(entryDiff.getKey());
+                } else {
+                    table.put(entryDiff.getKey(), entryDiff.getValue());
+                }
             }
+            diffs.get().clear();
+            save();
+            return changesCount;
+        } finally {
+            lock.writeLock().unlock();
         }
-        diffs.clear();
-        save();
-        return changesCount;
     }
 
     @Override
     public int rollback() {
-        int changesCount = diffs.size();
-        diffs.clear();
+        int changesCount = diffs.get().size();
+        diffs.get().clear();
         return changesCount;
     }
 
@@ -229,7 +260,7 @@ public class DataBaseTable implements Table {
 
     @Override
     public int getNumberOfUncommittedChanges() {
-        return diffs.size();
+        return diffs.get().size();
     }
 }
 
