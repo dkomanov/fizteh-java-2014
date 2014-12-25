@@ -43,6 +43,9 @@ public class ParrallelTest {
         Thread firstTestThread = new Thread(() -> {
             testTable.put("firstKey", testStoreable);
             try {
+                for (int i = 0; i < 100000000; ++i) {
+
+                }
                 testTable.commit();
             } catch (IOException e) {
                 throw new IllegalArgumentException("thread simple test: commit error");
@@ -52,6 +55,9 @@ public class ParrallelTest {
         Thread secondTestThread = new Thread(() -> {
             testTable.put("secondKey", testStoreable);
             try {
+                for (int i = 0; i < 100000000; ++i) {
+
+                }
                 testTable.commit();
             } catch (IOException e) {
                 throw new IllegalArgumentException("thread simple test: commit error");
