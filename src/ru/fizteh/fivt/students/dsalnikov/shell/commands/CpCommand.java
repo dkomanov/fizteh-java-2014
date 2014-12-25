@@ -7,20 +7,13 @@ import java.nio.file.DirectoryNotEmptyException;
 import java.nio.file.Files;
 
 
-public class CpCommand implements Command {
+public class CpCommand extends AbstractCommand {
 
     private Shell link;
 
     public CpCommand(Shell s) {
+        super("cp", 2);
         link = s;
-    }
-
-    public String getName() {
-        return "cp";
-    }
-
-    public int getArgsCount() {
-        return 2;
     }
 
     private void recursiveCopy(File startPoint, File destination) throws Exception {

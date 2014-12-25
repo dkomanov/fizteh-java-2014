@@ -6,20 +6,13 @@ import java.io.InputStream;
 import java.io.PrintStream;
 
 
-public class MvCommand implements Command {
+public class MvCommand extends AbstractCommand {
 
     private Shell link;
 
     public MvCommand(Shell s) {
+        super("mv", 2);
         link = s;
-    }
-
-    public String getName() {
-        return "mv";
-    }
-
-    public int getArgsCount() {
-        return 2;
     }
 
     public void execute(String[] st, InputStream inputStream, PrintStream outputStream) throws Exception {

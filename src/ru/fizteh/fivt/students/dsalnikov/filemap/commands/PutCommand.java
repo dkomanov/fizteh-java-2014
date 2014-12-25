@@ -1,16 +1,17 @@
 package ru.fizteh.fivt.students.dsalnikov.filemap.commands;
 
 import ru.fizteh.fivt.students.dsalnikov.filemap.Table;
-import ru.fizteh.fivt.students.dsalnikov.shell.commands.Command;
+import ru.fizteh.fivt.students.dsalnikov.shell.commands.AbstractCommand;
 
 import java.io.InputStream;
 import java.io.PrintStream;
 
-public class PutCommand implements Command {
+public class PutCommand extends AbstractCommand {
 
     private Table db;
 
     public PutCommand(Table t) {
+        super("put", 2);
         db = t;
     }
 
@@ -23,15 +24,5 @@ public class PutCommand implements Command {
             outputStream.println(String.format("overwrite\n'%s'", result));
         }
 
-    }
-
-    @Override
-    public String getName() {
-        return "put";
-    }
-
-    @Override
-    public int getArgsCount() {
-        return 2;
     }
 }

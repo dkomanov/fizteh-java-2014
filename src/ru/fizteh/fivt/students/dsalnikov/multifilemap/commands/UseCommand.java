@@ -1,17 +1,18 @@
 package ru.fizteh.fivt.students.dsalnikov.multifilemap.commands;
 
 import ru.fizteh.fivt.students.dsalnikov.multifilemap.MultiTable;
-import ru.fizteh.fivt.students.dsalnikov.shell.commands.Command;
+import ru.fizteh.fivt.students.dsalnikov.shell.commands.AbstractCommand;
 
 import java.io.File;
 import java.io.InputStream;
 import java.io.PrintStream;
 
-public class UseCommand implements Command {
+public class UseCommand extends AbstractCommand {
 
     MultiTable db;
 
     public UseCommand(MultiTable t) {
+        super("use", 1);
         db = t;
     }
 
@@ -31,14 +32,5 @@ public class UseCommand implements Command {
             }
         }
     }
-
-    @Override
-    public String getName() {
-        return "use";
-    }
-
-    @Override
-    public int getArgsCount() {
-        return 1;
-    }
 }
+

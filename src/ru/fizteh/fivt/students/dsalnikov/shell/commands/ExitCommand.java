@@ -5,20 +5,13 @@ import ru.fizteh.fivt.students.dsalnikov.shell.Shell;
 import java.io.InputStream;
 import java.io.PrintStream;
 
-public class ExitCommand implements Command {
+public class ExitCommand extends AbstractCommand {
 
     private Shell link;
 
     public ExitCommand(Shell s) {
+        super("exit", 0);
         link = s;
-    }
-
-    public String getName() {
-        return "exit";
-    }
-
-    public int getArgsCount() {
-        return 0;
     }
 
     public void execute(String[] st, InputStream inputStream, PrintStream outputStream) {

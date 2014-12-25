@@ -9,20 +9,13 @@ import java.io.InputStream;
 import java.io.PrintStream;
 import java.nio.file.FileAlreadyExistsException;
 
-public class MkdirCommand implements Command {
+public class MkdirCommand extends AbstractCommand {
 
     private Shell link;
 
     public MkdirCommand(Shell s) {
+        super("mkdir", 1);
         link = s;
-    }
-
-    public String getName() {
-        return "mkdir";
-    }
-
-    public int getArgsCount() {
-        return 1;
     }
 
     public void execute(String[] s, InputStream inputStream, PrintStream outputStream) throws IOException {

@@ -7,11 +7,12 @@ import ru.fizteh.fivt.students.dsalnikov.utils.StringUtils;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 
-public class CatCommand implements Command {
+public class CatCommand extends AbstractCommand {
 
     Shell link;
 
     public CatCommand(Shell s) {
+        super("cat", 1);
         link = s;
     }
 
@@ -31,16 +32,5 @@ public class CatCommand implements Command {
                 }
             }
         }
-    }
-
-    @Override
-    public String getName() {
-        return "cat";
-
-    }
-
-    @Override
-    public int getArgsCount() {
-        return 1;
     }
 }

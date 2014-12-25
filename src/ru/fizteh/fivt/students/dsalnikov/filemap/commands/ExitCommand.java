@@ -1,16 +1,17 @@
 package ru.fizteh.fivt.students.dsalnikov.filemap.commands;
 
 import ru.fizteh.fivt.students.dsalnikov.filemap.Table;
-import ru.fizteh.fivt.students.dsalnikov.shell.commands.Command;
+import ru.fizteh.fivt.students.dsalnikov.shell.commands.AbstractCommand;
 
 import java.io.InputStream;
 import java.io.PrintStream;
 
-public class ExitCommand implements Command {
+public class ExitCommand extends AbstractCommand {
 
     private Table db;
 
     public ExitCommand(Table table) {
+        super("exit", 0);
         db = table;
     }
 
@@ -22,15 +23,5 @@ public class ExitCommand implements Command {
             return;
         }
         System.exit(0);
-    }
-
-    @Override
-    public String getName() {
-        return "exit";
-    }
-
-    @Override
-    public int getArgsCount() {
-        return 0;
     }
 }

@@ -9,20 +9,13 @@ import java.io.InputStream;
 import java.io.PrintStream;
 import java.nio.file.DirectoryNotEmptyException;
 
-public class RmCommand implements Command {
+public class RmCommand extends AbstractCommand {
 
     private Shell link;
 
     public RmCommand(Shell s) {
+        super("rm", 1);
         link = s;
-    }
-
-    public String getName() {
-        return "rm";
-    }
-
-    public int getArgsCount() {
-        return 1;
     }
 
     private void delete(File f) throws IOException {

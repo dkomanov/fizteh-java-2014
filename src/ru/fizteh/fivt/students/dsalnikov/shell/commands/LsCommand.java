@@ -9,20 +9,13 @@ import java.io.InputStream;
 import java.io.PrintStream;
 
 
-public class LsCommand implements Command {
+public class LsCommand extends AbstractCommand {
 
     private Shell link;
 
     public LsCommand(Shell s) {
+        super("ls", 0);
         link = s;
-    }
-
-    public String getName() {
-        return "ls";
-    }
-
-    public int getArgsCount() {
-        return 0;
     }
 
     public void execute(String[] s, InputStream inputStream, PrintStream outputStream) throws IOException {

@@ -1,16 +1,17 @@
 package ru.fizteh.fivt.students.dsalnikov.multifilemap.commands;
 
 import ru.fizteh.fivt.students.dsalnikov.multifilemap.MultiTable;
-import ru.fizteh.fivt.students.dsalnikov.shell.commands.Command;
+import ru.fizteh.fivt.students.dsalnikov.shell.commands.AbstractCommand;
 
 import java.io.InputStream;
 import java.io.PrintStream;
 
-public class ShowCommand implements Command {
+public class ShowCommand extends AbstractCommand {
 
     MultiTable db;
 
     public ShowCommand(MultiTable t) {
+        super("show", 1);
         db = t;
     }
 
@@ -22,15 +23,5 @@ public class ShowCommand implements Command {
             outputStream.println("table_name\trow_count");
             db.showTables().forEach(System.out::println);
         }
-    }
-
-    @Override
-    public String getName() {
-        return "show";
-    }
-
-    @Override
-    public int getArgsCount() {
-        return 1;
     }
 }

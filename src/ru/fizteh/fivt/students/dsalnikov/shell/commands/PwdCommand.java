@@ -5,20 +5,13 @@ import ru.fizteh.fivt.students.dsalnikov.shell.Shell;
 import java.io.InputStream;
 import java.io.PrintStream;
 
-public class PwdCommand implements Command {
+public class PwdCommand extends AbstractCommand {
 
     private Shell link;
 
     public PwdCommand(Shell s) {
+        super("pwd", 0);
         link = s;
-    }
-
-    public String getName() {
-        return "pwd";
-    }
-
-    public int getArgsCount() {
-        return 0;
     }
 
     public void execute(String[] emptyStr, InputStream inputStream, PrintStream outputStream) {

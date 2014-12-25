@@ -9,20 +9,13 @@ import java.io.InputStream;
 import java.io.PrintStream;
 import java.nio.file.NoSuchFileException;
 
-public class CdCommand implements Command {
+public class CdCommand extends AbstractCommand {
 
     private Shell link;
 
     public CdCommand(Shell s) {
+        super("cd", 1);
         link = s;
-    }
-
-    public String getName() {
-        return "cd";
-    }
-
-    public int getArgsCount() {
-        return 1;
     }
 
     public void execute(String[] s, InputStream inputStream, PrintStream outputStream) throws IOException {

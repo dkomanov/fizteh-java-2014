@@ -1,16 +1,17 @@
 package ru.fizteh.fivt.students.dsalnikov.telnet.Commands;
 
-import ru.fizteh.fivt.students.dsalnikov.shell.commands.Command;
+import ru.fizteh.fivt.students.dsalnikov.shell.commands.AbstractCommand;
 import ru.fizteh.fivt.students.dsalnikov.telnet.ClientState;
 
 import java.io.InputStream;
 import java.io.PrintStream;
 
-public class ConnectCommand implements Command {
+public class ConnectCommand extends AbstractCommand {
 
     ClientState state;
 
     public ConnectCommand(ClientState state) {
+        super("connect", 2);
         this.state = state;
     }
 
@@ -18,14 +19,5 @@ public class ConnectCommand implements Command {
     public void execute(String[] args, InputStream inputStream, PrintStream outputStream) throws Exception {
         state.connect(args[1], Integer.parseInt(args[2]));
     }
-
-    @Override
-    public String getName() {
-        return "connect";
-    }
-
-    @Override
-    public int getArgsCount() {
-        return 2;
-    }
 }
+
