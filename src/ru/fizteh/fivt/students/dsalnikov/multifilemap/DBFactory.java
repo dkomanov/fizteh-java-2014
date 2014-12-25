@@ -15,8 +15,7 @@ public class DBFactory implements TableProviderFactory {
                 return new DBTableProvider(dir);
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new RuntimeException("creating of database failed");
         }
-        return null;
     }
 }

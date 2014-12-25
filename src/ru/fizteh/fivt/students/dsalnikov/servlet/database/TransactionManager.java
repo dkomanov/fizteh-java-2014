@@ -32,12 +32,8 @@ public class TransactionManager {
     }
 
     String makeTransactionId() {
-        StringBuilder sb = new StringBuilder();
-        sb.append(transactionCounter);
-        while (sb.length() < 5) {
-            sb.insert(0, 0);
-        }
+        String result = String.format("%05d", transactionCounter);
         transactionCounter += 1;
-        return sb.toString();
+        return result;
     }
 }

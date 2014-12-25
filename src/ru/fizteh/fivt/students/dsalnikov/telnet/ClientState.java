@@ -12,7 +12,7 @@ import java.rmi.registry.Registry;
 
 public class ClientState implements Serializable {
 
-    private volatile boolean isConnected;
+    private boolean isConnected;
     private RemoteTableProvider currentTableProvider;
     private String currentlyUsedHostName;
     private int currentlyUsedPort;
