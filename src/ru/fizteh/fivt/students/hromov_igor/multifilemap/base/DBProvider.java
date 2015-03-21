@@ -25,7 +25,7 @@ public class DBProvider implements TableProvider {
     }
 
     @Override
-    public Table createTable(String name) throws Exception {
+    public Table createTable(String name) throws Exception{
         if (tableManager.basicTables.containsKey(name)) {
             return null;
         }

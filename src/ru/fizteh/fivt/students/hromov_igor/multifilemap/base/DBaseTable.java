@@ -31,12 +31,12 @@ public class DBaseTable implements Table {
     }
 
     @Override
-    public int size() throws Exception {
+    public int size() {
         return table.keys.size();
     }
 
     @Override
-    public String put(String key, String value) throws Exception {
+    public String put(String key, String value) throws Exception{
         if (key == null) {
             throw new IllegalArgumentException("No key, null");
         }
@@ -59,7 +59,7 @@ public class DBaseTable implements Table {
     }
 
     @Override
-    public int commit() throws Exception {
+    public int commit() throws Exception{
         if (table.puted.size() == 0 && table.removed.size() == 0) {
             return 0;
         }
