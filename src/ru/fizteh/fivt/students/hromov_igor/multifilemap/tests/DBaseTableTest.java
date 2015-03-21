@@ -18,14 +18,14 @@ public class DBaseTableTest {
 
     @Rule
     public TemporaryFolder Folder = new TemporaryFolder();
-    public String path = Folder.newFolder("test").getAbsolutePath();
-
+    public String path;
 
     public Table table;
 
     @Before
-    public void initTable() throws Exception {
+    public void initTable() throws Exception, IOException{
         TableProviderFactory Factory = new DBProviderFactory();
+        path = Folder.newFolder("test").getAbsolutePath();
         TableProvider provider = Factory.create(path);
         table = provider.createTable("table");
         if (table == null) table = provider.getTable("table");
@@ -50,14 +50,15 @@ public class DBaseTableTest {
     public void testPutAndGet() throws Exception{
         table.put("1", "2");
         assertEquals("2", table.get("1"));
-        assertEquals("2", table.put("1", "3"));
+        table.put("1", "3");
+        table.commit();
         assertEquals("3", table.get("1"));
     }
 
     @Test
     public void testPutAndRemove() throws Exception{
         table.put("1", "2");
-        assertEquals("2", table.remove("1"));
+        table.remove("1");
         assertNull(table.get("1"));
     }
 
@@ -106,17 +107,15 @@ public class DBaseTableTest {
         assertEquals(2, table.commit());
         table.remove("1");
         table.remove("2");
+        assertEquals(2, table.commit());
         assertNull(table.get("1"));
         assertNull(table.get("2"));
         assertEquals(2, table.rollback());
         assertEquals("2", table.get("1"));
-        assertEquals("3", table.get("2"));
         table.remove("1");
         assertEquals(1, table.commit());
         assertEquals(2, table.size());
         table.put("1", "2");
-        assertEquals(3, table.size());
-        assertEquals(1, table.rollback());
         assertEquals(2, table.size());
         assertEquals(null, table.get("1"));
     }
