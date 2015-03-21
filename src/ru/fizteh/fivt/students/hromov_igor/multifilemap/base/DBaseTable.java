@@ -36,7 +36,7 @@ public class DBaseTable implements Table {
     }
 
     @Override
-    public String put(String key, String value) throws Exception{
+    public String put(String key, String value){
         if (key == null) {
             throw new IllegalArgumentException("No key, null");
         }
@@ -59,7 +59,7 @@ public class DBaseTable implements Table {
     }
 
     @Override
-    public int commit() throws Exception{
+    public int commit() {
         if (table.puted.size() == 0 && table.removed.size() == 0) {
             return 0;
         }
@@ -101,12 +101,16 @@ public class DBaseTable implements Table {
                             System.err.println(e.getMessage());
                         }
                     }
+                    table.tableDateBase[nDirectory][nFile] = new DataBase(pathFile.toString());
                 } catch (Exception e) {
                     System.err.println(e.getMessage());
                 }
-                table.tableDateBase[nDirectory][nFile] = new DataBase(pathFile.toString());
             }
-            table.tableDateBase[nDirectory][nFile].put(pair.getKey(), pair.getValue());
+            try {
+                table.tableDateBase[nDirectory][nFile].put(pair.getKey(), pair.getValue());
+            } catch(Exception e) {
+                System.err.println("Table error");
+            }
             if (table.keys.containsKey(pair.getKey())) {
                 table.keys.remove(pair.getKey());
             }
@@ -118,10 +122,15 @@ public class DBaseTable implements Table {
             b = key.getBytes()[0];
             nDirectory = b % SIZE;
             nFile = b / SIZE % SIZE;
-            table.tableDateBase[nDirectory][nFile].remove(key);
+            try{
+                table.tableDateBase[nDirectory][nFile].remove(key);
+            } catch(Exception e) {
+                System.err.println("Teble error");
+            }
             table.keys.remove(key);
         }
         table.removed.clear();
+        try {
         for (int i = 0; i < SIZE; i++) {
             for (int j = 0; j < SIZE; j++) {
                 if (table.tableDateBase[i][j] != null) {
@@ -129,11 +138,14 @@ public class DBaseTable implements Table {
                 }
             }
         }
+        } catch (Exception e) {
+            System.err.println("Teble error");
+        }
         return size;
     }
 
     @Override
-    public int rollback() throws Exception {
+    public int rollback() {
         int size = table.puted.size();
         table.removed.clear();
         table.puted.clear();

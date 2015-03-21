@@ -25,26 +25,26 @@ public class DBProvider implements TableProvider {
     }
 
     @Override
-    public Table createTable(String name) throws Exception{
+    public Table createTable(final String name) {
         if (tableManager.basicTables.containsKey(name)) {
             return null;
         }
-        tableManager.create(name);
         try {
+            tableManager.create(name);
             return tableManager.basicTables.get(name);
-        } catch (IllegalArgumentException e) {
+        } catch (Exception e) {
             throw new IllegalArgumentException("Illegal name of key", e);
         }
     }
 
     @Override
-    public void removeTable(String name) throws Exception {
+    public void removeTable(final String name) {
         if (!tableManager.basicTables.containsKey(name)) {
             throw new IllegalArgumentException("There is no such table");
         }
         try {
             boolean f = tableManager.drop(name);
-        } catch (IllegalArgumentException e) {
+        } catch (Exception e) {
             throw new IllegalArgumentException("Illegal name of table", e);
         }
     }
