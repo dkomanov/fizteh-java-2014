@@ -6,14 +6,16 @@ import ru.fizteh.fivt.storage.strings.TableProviderFactory;
 public class DBProviderFactory implements TableProviderFactory {
 
     @Override
-    public TableProvider create(String dir) throws Exception{
-        try{
+    public TableProvider create(String dir) {
+        try {
             if (dir == null) {
                 throw new Exception();
             }
-        } catch (Exception e){
+            return new DBProvider(dir);
+        } catch (Exception e) {
             System.err.println("Null Factory");
+            System.exit(1);
+            return null;
         }
-        return new DBProvider(dir);
     }
 }
