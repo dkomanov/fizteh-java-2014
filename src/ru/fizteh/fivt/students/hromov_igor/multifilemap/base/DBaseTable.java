@@ -28,15 +28,15 @@ public class DBaseTable implements Table {
             return (table.keys.get(key));
         }
         return null;
-    }
+     }
 
     @Override
     public int size() {
         return table.keys.size();
-    }
+     }
 
     @Override
-    public String put(String key, String value){
+    public String put(String key, String value) {
         if (key == null) {
             throw new IllegalArgumentException("No key, null");
         }
@@ -47,7 +47,7 @@ public class DBaseTable implements Table {
     @Override
     public String getName() {
         return table.tableName;
-    }
+     }
 
     @Override
     public String remove(String key) throws IllegalArgumentException {
@@ -62,7 +62,7 @@ public class DBaseTable implements Table {
     public int commit() {
         if (table.puted.size() == 0 && table.removed.size() == 0) {
             return 0;
-        }
+         }
         byte b;
         int nDirectory;
         int nFile;
@@ -84,7 +84,6 @@ public class DBaseTable implements Table {
                         } catch (Exception e) {
                             System.err.println(e.getMessage());
                         }
-
                     }
                 } catch (Exception e) {
                     System.err.println(e.getMessage());
@@ -108,7 +107,7 @@ public class DBaseTable implements Table {
             }
             try {
                 table.tableDateBase[nDirectory][nFile].put(pair.getKey(), pair.getValue());
-            } catch(Exception e) {
+            } catch (Exception e) {
                 System.err.println("Table error");
             }
             if (table.keys.containsKey(pair.getKey())) {
@@ -122,7 +121,7 @@ public class DBaseTable implements Table {
             b = key.getBytes()[0];
             nDirectory = b % SIZE;
             nFile = b / SIZE % SIZE;
-            try{
+            try {
                 table.tableDateBase[nDirectory][nFile].remove(key);
             } catch(Exception e) {
                 System.err.println("Teble error");
@@ -150,7 +149,7 @@ public class DBaseTable implements Table {
         table.removed.clear();
         table.puted.clear();
         return size;
-    }
+     }
 
     @Override
     public List<String> list() {
@@ -159,6 +158,6 @@ public class DBaseTable implements Table {
             list.add(key);
         }
         return list;
-    }
+     }
 
 }
