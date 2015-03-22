@@ -57,7 +57,7 @@ public class DataBase {
 
     public void get(String[] args) throws Exception {
         if (args.length > 2) {
-            throw new Exception("Put : " + ErrorHandler.ArgNumHandler());
+            throw new Exception("Put : " + ErrorHandler.argNumHandler());
         }
         String key = args[1];
         if (dBase.containsKey(key)) {

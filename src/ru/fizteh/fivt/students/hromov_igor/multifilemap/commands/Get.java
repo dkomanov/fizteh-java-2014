@@ -7,11 +7,11 @@ public class Get {
 
     public static void run(String[] args, TableManager table) throws Exception {
         if (args.length != 2) {
-            throw new Exception("Get : " + ErrorHandler.ArgNumHandler());
+            throw new Exception("Get : " + ErrorHandler.argNumHandler());
         }
 
         if (table.currentTable == null) {
-            throw new Exception("Table : " + ErrorHandler.NullTableException());
+            throw new Exception("Table : " + ErrorHandler.nullTableException());
         }
 
         String key = args[1];

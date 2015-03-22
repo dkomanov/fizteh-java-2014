@@ -9,24 +9,22 @@ import ru.fizteh.fivt.storage.strings.TableProvider;
 import ru.fizteh.fivt.storage.strings.TableProviderFactory;
 import ru.fizteh.fivt.students.hromov_igor.multifilemap.base.DBProviderFactory;
 
-import java.io.IOException;
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
 public class DBaseTableTest {
 
     @Rule
-    public TemporaryFolder Folder = new TemporaryFolder();
+    public TemporaryFolder folder = new TemporaryFolder();
     public String path;
 
     public Table table;
 
     @Before
     public void initTable() throws Exception {
-        TableProviderFactory Factory = new DBProviderFactory();
-        path = Folder.newFolder("test").getAbsolutePath();
-        TableProvider provider = Factory.create(path);
+        TableProviderFactory factory = new DBProviderFactory();
+        path = folder.newFolder("test").getAbsolutePath();
+        TableProvider provider = factory.create(path);
         table = provider.createTable("table");
         if (table == null) {
             table = provider.getTable("table");

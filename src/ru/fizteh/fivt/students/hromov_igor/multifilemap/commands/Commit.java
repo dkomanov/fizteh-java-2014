@@ -7,12 +7,12 @@ import static ru.fizteh.fivt.students.hromov_igor.multifilemap.exception.ErrorHa
 
 public class Commit {
 
-    public static void run (String[] args, TableManager table) throws Exception {
+    public static void run(String[] args, TableManager table) throws Exception {
         if (args.length != 1) {
-            throw new Exception("Commit : " + ArgNumHandler());
+            throw new Exception("Commit : " + argNumHandler());
          }
         if (table.currentTable == null) {
-            throw new Exception("Commit : " + NullTableException());
+            throw new Exception("Commit : " + nullTableException());
          } else {
             String jTable = table.currentTable;
             Table dBaseTable = table.basicTables.get(jTable);

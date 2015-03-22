@@ -9,10 +9,10 @@ public class Rollback {
 
     public static void run(String[] args, TableManager table) throws Exception {
         if (args.length != 1) {
-            throw new Exception("Rollback : " + ErrorHandler.ArgNumHandler());
+            throw new Exception("Rollback : " + ErrorHandler.argNumHandler());
         }
         if (table.currentTable == null) {
-            throw new Exception("Table : " + ErrorHandler.NullTableException());
+            throw new Exception("Table : " + ErrorHandler.nullTableException());
         }
         String jTable = table.currentTable;
         Table dBaseTable = table.basicTables.get(jTable);

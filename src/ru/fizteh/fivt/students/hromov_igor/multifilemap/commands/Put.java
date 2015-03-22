@@ -11,11 +11,11 @@ public class Put {
 
     public static void run(String[] args, TableManager table) throws Exception {
         if (args.length != 3) {
-            throw new Exception("Put : " + ErrorHandler.ArgNumHandler());
+            throw new Exception("Put : " + ErrorHandler.argNumHandler());
         }
         String tableName = table.currentTable;
         if (table.currentTable == null) {
-            throw new Exception("Table : " + ErrorHandler.NullTableException());
+            throw new Exception("Table : " + ErrorHandler.nullTableException());
         }
         Path path = table.path;
         String key = args[1];

@@ -7,10 +7,10 @@ public class List {
 
     public static void run(String[] args, TableManager table) throws Exception {
         if (args.length != 1) {
-            throw new Exception("List : " + ErrorHandler.ArgNumHandler());
+            throw new Exception("List : " + ErrorHandler.argNumHandler());
         }
         if (table.currentTable == null) {
-            throw new Exception("List : " + ErrorHandler.NullTableException());
+            throw new Exception("List : " + ErrorHandler.nullTableException());
         }
         System.out.println(String.join("; ", table.usingTable.keys.keySet()));
     }

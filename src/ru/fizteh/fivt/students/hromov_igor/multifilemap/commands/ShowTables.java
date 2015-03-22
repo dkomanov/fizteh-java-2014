@@ -8,7 +8,7 @@ public class ShowTables {
 
     public static void run(String[] args, TableManager table) throws Exception {
         if (args.length != 2) {
-            throw new Exception("ShowTables : " + ErrorHandler.ArgNumHandler());
+            throw new Exception("ShowTables : " + ErrorHandler.argNumHandler());
         }
         table.showTables(args);
     }

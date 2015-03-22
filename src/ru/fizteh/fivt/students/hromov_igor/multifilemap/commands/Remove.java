@@ -10,10 +10,10 @@ public class Remove {
 
     public static void run(String[] args, TableManager table) throws Exception {
         if (args.length != 2) {
-            throw new Exception("Remove : " + ErrorHandler.ArgNumHandler());
+            throw new Exception("Remove : " + ErrorHandler.argNumHandler());
         }
         if (table.currentTable == null) {
-            throw new Exception("Table : " + ErrorHandler.NullTableException());
+            throw new Exception("Table : " + ErrorHandler.nullTableException());
         }
         String key = args[1];
         if (table.usingTable.keys.containsKey(key)) {

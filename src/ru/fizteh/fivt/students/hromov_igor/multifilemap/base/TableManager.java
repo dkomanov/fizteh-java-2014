@@ -2,7 +2,6 @@ package ru.fizteh.fivt.students.hromov_igor.multifilemap.base;
 
 import ru.fizteh.fivt.storage.strings.Table;
 import ru.fizteh.fivt.students.hromov_igor.multifilemap.exception.ErrorHandler;
-import ru.fizteh.fivt.students.hromov_igor.shell.cmd.Rm;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -11,7 +10,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 public class TableManager {
-
+    
 	public String currentTable;
     public Path path;
     public BaseTable usingTable;
@@ -27,10 +26,10 @@ public class TableManager {
                 path.toFile().mkdir();
             }
             if (!path.toFile().isDirectory()) {
-                throw new Exception("Table1 : " + ErrorHandler.PathNameException());
+                throw new Exception("Table1 : " + ErrorHandler.pathNameException());
             }
         } catch (Exception e) {
-            throw new Exception("Table2 : " + ErrorHandler.PathNameException(), e);
+            throw new Exception("Table2 : " + ErrorHandler.pathNameException(), e);
         }
         tables = new HashMap<>();
         basicTables = new HashMap<>();
@@ -41,7 +40,7 @@ public class TableManager {
                 tables.put(curDir, new BaseTable(curDir, path));
                 basicTables.put(curDir, new DBaseTable(tables.get(curDir)));
             } else {
-                throw new Exception("Table : " + ErrorHandler.RootDirException());
+                throw new Exception("Table : " + ErrorHandler.rootDirException());
             }
             String s;
             Path p;
@@ -63,7 +62,7 @@ public class TableManager {
 
     public boolean drop(String name) throws Exception {
         if (name == null) {
-            throw new Exception("Table : " + ErrorHandler.NullTableException());
+            throw new Exception("Table : " + ErrorHandler.nullTableException());
         }
         boolean tableContainsKey = tables.containsKey(name);
         if (!tableContainsKey) {
@@ -80,7 +79,7 @@ public class TableManager {
 
     public void create(String name) throws Exception {
         if (name == null) {
-            throw new Exception("Table : " + ErrorHandler.NullTableException());
+            throw new Exception("Table : " + ErrorHandler.nullTableException());
         }
         try {
             boolean flag = tables.containsKey(name);
@@ -105,14 +104,14 @@ public class TableManager {
 
     public void use(String name) throws Exception {
         if (name == null) {
-            throw new Exception("Table : " + ErrorHandler.NullTableException());
+            throw new Exception("Table : " + ErrorHandler.nullTableException());
         }
         if (currentTable != null) {
             if (usingTable.puted.size() != 0 || usingTable.removed.size() != 0) {
-                throw new Exception("Table : " + ErrorHandler.UnsavedChangedException());
+                throw new Exception("Table : " + ErrorHandler.unsavedChangedException());
             }
             if (currentTable.equals(name)) {
-                throw new Exception("Table : " + ErrorHandler.AlreadyUsingException());
+                throw new Exception("Table : " + ErrorHandler.alreadyUsingException());
             }
         }
         try {

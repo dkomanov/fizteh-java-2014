@@ -14,50 +14,49 @@ import static org.junit.Assert.assertNull;
 public class DBProviderTest {
 
     @Rule
-    public TemporaryFolder Folder = new TemporaryFolder();
+    public TemporaryFolder folder = new TemporaryFolder();
 
-    public TableProvider Provider;
+    public TableProvider provider;
 
     @Before
     public void initProvider() throws Exception {
         TableProviderFactory factory = new DBProviderFactory();
-        Provider = factory.create(Folder.newFolder("test").getAbsolutePath());
+        provider = factory.create(folder.newFolder("test").getAbsolutePath());
     }
 
     @Test (expected = IllegalArgumentException.class)
     public void getNullTable() {
-        Provider.getTable(null);
+        provider.getTable(null);
     }
 
     @Test (expected = IllegalArgumentException.class)
     public void createNullTable() throws Exception {
-        Provider.createTable(null);
+        provider.createTable(null);
     }
 
     @Test (expected = IllegalArgumentException.class)
     public void removeNullTable() throws Exception {
-        Provider.removeTable(null);
+        provider.removeTable(null);
     }
 
     @Test
     public void createAndGetTable() throws Exception {
-        Provider.createTable("newTable");
-        assertNull(Provider.getTable("notExistingTable"));
-        assertNotNull(Provider.getTable("newTable"));
+        provider.createTable("newTable");
+        assertNull(provider.getTable("notExistingTable"));
+        assertNotNull(provider.getTable("newTable"));
     }
 
     @Test (expected = IllegalStateException.class)
     public void removeNotExistingTable() throws Exception {
-        Provider.removeTable("notExistingTable");
+        provider.removeTable("notExistingTable");
     }
 
     @Test
     public void createAndRemoveTable() throws Exception {
-        Provider.createTable("newTable");
-        assertNotNull(Provider.getTable("newTable"));
-        Provider.removeTable("newTable");
-        assertNull(Provider.getTable("newTable"));
+        provider.createTable("newTable");
+        assertNotNull(provider.getTable("newTable"));
+        provider.removeTable("newTable");
+        assertNull(provider.getTable("newTable"));
     }
-
 
 }

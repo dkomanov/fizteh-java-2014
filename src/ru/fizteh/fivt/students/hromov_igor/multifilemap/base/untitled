@@ -1,0 +1,11 @@
+
+
+[checkstyle] /home/travis/build/dkomanov/fizteh-java-2014/src/ru/fizteh/fivt/students/hromov_igor/multifilemap/exception/ErrorHandler.java:4:26: Name 'ArgNumHandler' must match pattern '^[a-z][a-zA-Z0-9]*$'.
+[checkstyle] /home/travis/build/dkomanov/fizteh-java-2014/src/ru/fizteh/fivt/students/hromov_igor/multifilemap/exception/ErrorHandler.java:8:26: Name 'NullTableException' must match pattern '^[a-z][a-zA-Z0-9]*$'.
+[checkstyle] /home/travis/build/dkomanov/fizteh-java-2014/src/ru/fizteh/fivt/students/hromov_igor/multifilemap/exception/ErrorHandler.java:12:26: Name 'PathNameException' must match pattern '^[a-z][a-zA-Z0-9]*$'.
+[checkstyle] /home/travis/build/dkomanov/fizteh-java-2014/src/ru/fizteh/fivt/students/hromov_igor/multifilemap/exception/ErrorHandler.java:16:26: Name 'RootDirException' must match pattern '^[a-z][a-zA-Z0-9]*$'.
+[checkstyle] /home/travis/build/dkomanov/fizteh-java-2014/src/ru/fizteh/fivt/students/hromov_igor/multifilemap/exception/ErrorHandler.java:20:26: Name 'UnsavedChangedException' must match pattern '^[a-z][a-zA-Z0-9]*$'.
+[checkstyle] /home/travis/build/dkomanov/fizteh-java-2014/src/ru/fizteh/fivt/students/hromov_igor/multifilemap/exception/ErrorHandler.java:24:26: Name 'AlreadyUsingException' must match pattern '^[a-z][a-zA-Z0-9]*$'.
+
+[checkstyle] /home/travis/build/dkomanov/fizteh-java-2014/src/ru/fizteh/fivt/students/hromov_igor/multifilemap/tests/DBProviderTest.java:17:28: Name 'Folder' must match pattern '^[a-z][a-zA-Z0-9]*$'.
+[checkstyle] /home/travis/build/dkomanov/fizteh-java-2014/src/ru/fizteh/fivt/students/hromov_igor/multifilemap/tests/DBProviderTest.java:19:26: Name 'Provider' must match pattern '^[a-z][a-zA-Z0-9]*$'.
