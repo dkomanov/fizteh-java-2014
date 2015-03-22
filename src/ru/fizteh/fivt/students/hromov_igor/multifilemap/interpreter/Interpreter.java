@@ -28,7 +28,7 @@ public class Interpreter {
                             }
                         }
                     }
-                } while(true);
+                } while (true);
             } catch (Exception e) {
                 System.err.println(e.getMessage());
                 System.exit(1);

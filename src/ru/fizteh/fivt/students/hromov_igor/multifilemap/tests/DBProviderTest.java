@@ -30,29 +30,29 @@ public class DBProviderTest {
     }
 
     @Test (expected = IllegalArgumentException.class)
-    public void createNullTable() throws Exception{
+    public void createNullTable() throws Exception {
         Provider.createTable(null);
     }
 
     @Test (expected = IllegalArgumentException.class)
-    public void removeNullTable() throws Exception{
+    public void removeNullTable() throws Exception {
         Provider.removeTable(null);
     }
 
     @Test
-    public void createAndGetTable() throws Exception{
+    public void createAndGetTable() throws Exception {
         Provider.createTable("newTable");
         assertNull(Provider.getTable("notExistingTable"));
         assertNotNull(Provider.getTable("newTable"));
     }
 
     @Test (expected = IllegalStateException.class)
-    public void removeNotExistingTable() throws Exception{
+    public void removeNotExistingTable() throws Exception {
         Provider.removeTable("notExistingTable");
     }
 
     @Test
-    public void createAndRemoveTable() throws Exception{
+    public void createAndRemoveTable() throws Exception {
         Provider.createTable("newTable");
         assertNotNull(Provider.getTable("newTable"));
         Provider.removeTable("newTable");

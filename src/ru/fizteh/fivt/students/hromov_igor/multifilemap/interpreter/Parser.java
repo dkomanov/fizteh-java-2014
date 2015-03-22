@@ -6,13 +6,15 @@ import ru.fizteh.fivt.students.hromov_igor.multifilemap.commands.*;
 
 public class Parser {
 
-    public static void parse(final String[] args, Object object) throws Exception {
+    public static void parse(final String[] args,
+                             Object object) throws Exception {
         try {
                 TableManager obj = (TableManager) object;
                 switch (args[0]) {
                     case "exit":
                         if (obj.currentTable != null) {
-                            BaseTable curTable = obj.tables.get(obj.currentTable);
+                            BaseTable curTable = obj.
+                                    tables.get(obj.currentTable);
                             for (int i = 0; i < 16; i++) {
                                 for (int j = 0; j < 16; j++) {
                                     if (curTable.tableDateBase[i][j] != null) {

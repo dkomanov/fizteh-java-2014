@@ -8,7 +8,7 @@ import java.util.Map;
 import java.util.Set;
 
 
-public class BaseTable{
+public class BaseTable {
 
     static final int SIZEDIR = 16;
     static final int SIZEDAT = 16;

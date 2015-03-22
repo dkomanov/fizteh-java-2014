@@ -100,13 +100,15 @@ public class DBaseTable implements Table {
                             System.err.println(e.getMessage());
                         }
                     }
-                    table.tableDateBase[nDirectory][nFile] = new DataBase(pathFile.toString());
+                    table.tableDateBase[nDirectory][nFile] =
+                            new DataBase(pathFile.toString());
                 } catch (Exception e) {
                     System.err.println(e.getMessage());
                 }
             }
             try {
-                table.tableDateBase[nDirectory][nFile].put(pair.getKey(), pair.getValue());
+                table.tableDateBase[nDirectory][nFile].
+                        put(pair.getKey(), pair.getValue());
             } catch (Exception e) {
                 System.err.println("Table error");
             }
@@ -123,7 +125,7 @@ public class DBaseTable implements Table {
             nFile = b / SIZE % SIZE;
             try {
                 table.tableDateBase[nDirectory][nFile].remove(key);
-            } catch(Exception e) {
+            } catch (Exception e) {
                 System.err.println("Teble error");
             }
             table.keys.remove(key);

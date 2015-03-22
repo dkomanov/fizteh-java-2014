@@ -16,7 +16,7 @@ import java.nio.file.Files;
 import java.io.ByteArrayOutputStream;
 import java.util.Map;
 
-public class DataBase{
+public class DataBase {
 
     public Path dBasePath;
     public Map<String, String> dBase;

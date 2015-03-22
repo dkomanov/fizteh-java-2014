@@ -23,16 +23,18 @@ public class DBaseTableTest {
     public Table table;
 
     @Before
-    public void initTable() throws Exception, IOException{
+    public void initTable() throws Exception {
         TableProviderFactory Factory = new DBProviderFactory();
         path = Folder.newFolder("test").getAbsolutePath();
         TableProvider provider = Factory.create(path);
         table = provider.createTable("table");
-        if (table == null) table = provider.getTable("table");
+        if (table == null) {
+            table = provider.getTable("table");
+        }
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void putNull() throws Exception{
+    @Test (expected = IllegalArgumentException.class)
+    public void putNull() throws Exception {
         table.put(null, null);
     }
 
@@ -47,7 +49,7 @@ public class DBaseTableTest {
     }
 
     @Test
-    public void testPutAndGet() throws Exception{
+    public void testPutAndGet() throws Exception {
         table.put("1", "2");
         assertEquals("2", table.get("1"));
         table.put("1", "3");
@@ -56,14 +58,14 @@ public class DBaseTableTest {
     }
 
     @Test
-    public void testPutAndRemove() throws Exception{
+    public void testPutAndRemove() throws Exception {
         table.put("1", "2");
         table.remove("1");
         assertNull(table.get("1"));
     }
 
     @Test
-    public void testSize() throws Exception{
+    public void testSize() throws Exception {
         table.remove("1");
         table.remove("3");
         int count = table.size();
@@ -80,7 +82,7 @@ public class DBaseTableTest {
 
 
     @Test
-    public void testRollBack() throws Exception{
+    public void testRollBack() throws Exception {
         assertEquals(0, table.rollback());
         table.put("1", "2");
         table.put("2", "3");
@@ -91,7 +93,7 @@ public class DBaseTableTest {
     }
 
     @Test
-    public void testCommit() throws Exception{
+    public void testCommit() throws Exception {
         assertEquals(0, table.commit());
         table.put("1", "2");
         table.put("2", "3");
@@ -101,7 +103,7 @@ public class DBaseTableTest {
     }
 
     @Test
-    public void testCommitAndRollback() throws Exception{
+    public void testCommitAndRollback() throws Exception {
         table.put("1", "a");
         table.put("2", "b");
         assertEquals(2, table.commit());

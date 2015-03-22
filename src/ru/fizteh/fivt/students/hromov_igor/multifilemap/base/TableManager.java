@@ -1,13 +1,14 @@
 package ru.fizteh.fivt.students.hromov_igor.multifilemap.base;
 
-import java.util.Map;
-import java.util.HashMap;
-import java.util.Map.Entry;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-
 import ru.fizteh.fivt.storage.strings.Table;
 import ru.fizteh.fivt.students.hromov_igor.multifilemap.exception.ErrorHandler;
+import ru.fizteh.fivt.students.hromov_igor.shell.cmd.Rm;
+
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
 
 public class TableManager {
 
@@ -70,7 +71,7 @@ public class TableManager {
         } else {
             Path newPath = path.resolve(name);
             String[] args = new String[3];
-            //Rm.run(new String[] {"rm", "-r", newPath.toString()}, true, 2);
+            //Rm.run(new String[]{"rm", "-r", newPath.toString()}, true, 2);
             tables.remove(name);
             basicTables.remove(name);
         }

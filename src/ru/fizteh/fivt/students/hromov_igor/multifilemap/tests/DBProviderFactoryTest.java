@@ -9,19 +9,19 @@ import ru.fizteh.fivt.students.hromov_igor.multifilemap.base.DBProviderFactory;
 
 public class DBProviderFactoryTest {
 
-    private TableProviderFactory NewFactory;
+    private TableProviderFactory newFactory;
 
     @Rule
     public TemporaryFolder folder = new TemporaryFolder();
 
     @Before
     public void before() {
-        NewFactory = new DBProviderFactory();
+        newFactory = new DBProviderFactory();
     }
 
 
     @Test(expected = Exception.class)
     public void createWithNullArgs() throws Exception {
-        NewFactory.create(null);
+        newFactory.create(null);
     }
 }

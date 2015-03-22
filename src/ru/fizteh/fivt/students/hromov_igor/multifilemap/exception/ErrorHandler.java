@@ -21,7 +21,7 @@ public class ErrorHandler {
         return ("unsaved changes");
     }
 
-    public static String AlreadyUsingException(){
+    public static String AlreadyUsingException() {
         return ("is already using");
     }
 
