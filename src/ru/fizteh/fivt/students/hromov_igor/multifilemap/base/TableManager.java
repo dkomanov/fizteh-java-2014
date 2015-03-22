@@ -11,7 +11,7 @@ import java.util.Map.Entry;
 
 public class TableManager {
     
-	public String currentTable;
+    public String currentTable;
     public Path path;
     public BaseTable usingTable;
     public Map<String, BaseTable> tables;
