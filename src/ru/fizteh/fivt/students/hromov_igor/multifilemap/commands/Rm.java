@@ -1,7 +1,5 @@
 package ru.fizteh.fivt.students.hromov_igor.multifilemap.commands;
 
-import ru.fizteh.fivt.students.hromov_igor.shell.StringParser;
-
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.InvalidPathException;
