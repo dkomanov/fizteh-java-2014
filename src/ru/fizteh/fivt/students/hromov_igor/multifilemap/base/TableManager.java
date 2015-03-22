@@ -1,6 +1,7 @@
 package ru.fizteh.fivt.students.hromov_igor.multifilemap.base;
 
 import ru.fizteh.fivt.storage.strings.Table;
+import ru.fizteh.fivt.students.hromov_igor.multifilemap.commands.Rm;
 import ru.fizteh.fivt.students.hromov_igor.multifilemap.exception.ErrorHandler;
 
 import java.nio.file.Path;
@@ -70,7 +71,7 @@ public class TableManager {
         } else {
             Path newPath = path.resolve(name);
             String[] args = new String[3];
-            //Rm.run(new String[]{"rm", "-r", newPath.toString()}, true, 2);
+            Rm.run(new String[]{"rm", "-r", newPath.toString()});
             tables.remove(name);
             basicTables.remove(name);
         }

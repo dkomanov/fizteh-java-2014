@@ -1,6 +1,5 @@
 package ru.fizteh.fivt.students.hromov_igor.multifilemap.commands;
 
-import ru.fizteh.fivt.students.hromov_igor.multifilemap.*;
 import ru.fizteh.fivt.students.hromov_igor.multifilemap.base.TableManager;
 import ru.fizteh.fivt.students.hromov_igor.multifilemap.exception.ErrorHandler;
 
