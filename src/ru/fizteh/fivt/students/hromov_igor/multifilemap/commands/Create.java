@@ -1,15 +1,28 @@
 package ru.fizteh.fivt.students.hromov_igor.multifilemap.commands;
 
-import ru.fizteh.fivt.students.hromov_igor.multifilemap.*;
-import ru.fizteh.fivt.students.hromov_igor.multifilemap.base.TableManager;
-import ru.fizteh.fivt.students.hromov_igor.multifilemap.exception.ErrorHandler;
+public class Create extends ParentCommand {
 
-public class Create {
+    private String tableName;
 
-    public static void run(String[] args, TableManager table) throws Exception {
-        if (args.length != 2) {
-            throw new Exception("Create : " + ErrorHandler.argNumHandler());
+    public Create(CommandState state) {
+        super(state);
+    }
+
+
+    @Override
+    public void run() {
+        if (state.base.createTable(tableName) == null) {
+            System.out.println(tableName + " exists");
+        } else {
+            System.out.println("created");
         }
-        table.create(args[1]);
+    }
+
+    public final void putArguments(String[] args) {
+        tableName = args[1];
+    }
+
+    public final int requiredArgsNum() {
+        return 1;
     }
 }

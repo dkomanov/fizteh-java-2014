@@ -1,17 +1,22 @@
 package ru.fizteh.fivt.students.hromov_igor.multifilemap.commands;
 
-import ru.fizteh.fivt.students.hromov_igor.multifilemap.exception.ErrorHandler;
-import ru.fizteh.fivt.students.hromov_igor.multifilemap.base.TableManager;
+public class List extends ParentCommand {
 
-public class List {
+    public List(CommandState state) {
+        super(state);
+    }
 
-    public static void run(String[] args, TableManager table) throws Exception {
-        if (args.length != 1) {
-            throw new Exception("List : " + ErrorHandler.argNumHandler());
+    @Override
+    public void run() {
+        if (state.usingTable == null) {
+            System.out.println("no table");
+        } else {
+            System.out.println(String.join(", ", state.usingTable.list()));
         }
-        if (table.currentTable == null) {
-            throw new Exception("List : " + ErrorHandler.nullTableException());
-        }
-        System.out.println(String.join("; ", table.usingTable.keys.keySet()));
+    }
+
+    @Override
+    public int requiredArgsNum() {
+        return 0;
     }
 }

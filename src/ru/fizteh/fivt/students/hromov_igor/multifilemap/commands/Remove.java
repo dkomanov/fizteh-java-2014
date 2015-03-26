@@ -1,26 +1,33 @@
 package ru.fizteh.fivt.students.hromov_igor.multifilemap.commands;
 
-import ru.fizteh.fivt.students.hromov_igor.multifilemap.*;
-import ru.fizteh.fivt.students.hromov_igor.multifilemap.base.TableManager;
-import ru.fizteh.fivt.students.hromov_igor.multifilemap.exception.ErrorHandler;
+public class Remove extends ParentCommand {
 
-public class Remove {
+    private String key;
 
-    private static final int SIZE = 16;
+    public Remove(CommandState state) {
+        super(state);
+    }
 
-    public static void run(String[] args, TableManager table) throws Exception {
-        if (args.length != 2) {
-            throw new Exception("Remove : " + ErrorHandler.argNumHandler());
-        }
-        if (table.currentTable == null) {
-            throw new Exception("Table : " + ErrorHandler.nullTableException());
-        }
-        String key = args[1];
-        if (table.usingTable.keys.containsKey(key)) {
-            System.out.println("removed");
-            table.usingTable.removed.add(key);
+    @Override
+    public void run() {
+        if (state.usingTable == null) {
+            System.out.println("no table");
         } else {
-            System.out.println("not found");
+            String result = state.usingTable.remove(key);
+            if (result != null) {
+                System.out.println("removed");
+            } else {
+                System.out.println("not found");
+            }
         }
+    }
+
+    public final void putArguments(String[] args) {
+        key = args[1];
+    }
+
+    @Override
+    public int requiredArgsNum() {
+        return 1;
     }
 }

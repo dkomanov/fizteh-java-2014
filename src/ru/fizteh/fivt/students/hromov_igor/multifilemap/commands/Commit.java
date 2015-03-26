@@ -1,22 +1,22 @@
 package ru.fizteh.fivt.students.hromov_igor.multifilemap.commands;
 
-import ru.fizteh.fivt.storage.strings.Table;
-import ru.fizteh.fivt.students.hromov_igor.multifilemap.base.TableManager;
+public class Commit extends ParentCommand {
 
-import static ru.fizteh.fivt.students.hromov_igor.multifilemap.exception.ErrorHandler.*;
+    public Commit(CommandState state) {
+        super(state);
+    }
 
-public class Commit {
+    @Override
+    public void run() {
+        if (state.usingTable == null) {
+            System.out.println("no table");
+        } else {
+            System.out.println(state.usingTable.commit());
+        }
+    }
 
-    public static void run(String[] args, TableManager table) throws Exception {
-        if (args.length != 1) {
-            throw new Exception("Commit : " + argNumHandler());
-         }
-        if (table.currentTable == null) {
-            throw new Exception("Commit : " + nullTableException());
-         } else {
-            String jTable = table.currentTable;
-            Table dBaseTable = table.basicTables.get(jTable);
-            System.out.println(dBaseTable.commit());
-         }
+    @Override
+    public int requiredArgsNum() {
+        return 0;
     }
 }

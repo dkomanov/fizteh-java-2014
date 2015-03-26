@@ -1,26 +1,35 @@
 package ru.fizteh.fivt.students.hromov_igor.multifilemap.commands;
 
-import ru.fizteh.fivt.students.hromov_igor.multifilemap.base.TableManager;
-import ru.fizteh.fivt.students.hromov_igor.multifilemap.exception.ErrorHandler;
+public class Get extends ParentCommand {
 
-public class Get {
+    private String key;
 
-    public static void run(String[] args, TableManager table) throws Exception {
-        if (args.length != 2) {
-            throw new Exception("Get : " + ErrorHandler.argNumHandler());
-        }
+    public Get(CommandState state) {
+        super(state);
+    }
 
-        if (table.currentTable == null) {
-            throw new Exception("Table : " + ErrorHandler.nullTableException());
-        }
-
-        String key = args[1];
-
-        if (table.usingTable.keys.containsKey(key)) {
-            System.out.println("found");
-            System.out.println(table.usingTable.keys.get(key));
+    @Override
+    public void run() {
+        if (state.usingTable == null) {
+            System.out.println("no table");
         } else {
-            System.out.println("not found");
+            String result = state.usingTable.get(key);
+            if (result == null) {
+                System.out.println("not found");
+            } else {
+                System.out.println("found");
+                System.out.println(result);
+            }
         }
     }
+
+    public final void putArguments(String[] args) {
+        key = args[1];
+    }
+
+    @Override
+    public int requiredArgsNum() {
+        return 1;
+    }
+
 }

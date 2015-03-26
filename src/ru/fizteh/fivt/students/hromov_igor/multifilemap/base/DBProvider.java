@@ -3,12 +3,22 @@ package ru.fizteh.fivt.students.hromov_igor.multifilemap.base;
 import ru.fizteh.fivt.storage.strings.Table;
 import ru.fizteh.fivt.storage.strings.TableProvider;
 
+import java.util.Map;
+import java.util.Set;
+
 
 public class DBProvider implements TableProvider {
 
-    public TableManager tableManager;
+    private TableManager tableManager;
 
-    public DBProvider(String dir) throws Exception {
+    public TableManager getTableManager() {
+        return tableManager;
+    }
+
+    private String illegalKeyName = "Illegal name of key";
+    private String illegalTableName = "Illegal name of table";
+
+    public DBProvider(String dir) {
         tableManager = new TableManager(dir);
     }
 
@@ -18,7 +28,7 @@ public class DBProvider implements TableProvider {
             try {
                 return tableManager.basicTables.get(name);
             } catch (IllegalArgumentException e) {
-                throw new IllegalArgumentException("Illegal name of key", e);
+                throw new IllegalArgumentException(illegalKeyName, e);
             }
         }
         return null;
@@ -33,19 +43,24 @@ public class DBProvider implements TableProvider {
             tableManager.create(name);
             return tableManager.basicTables.get(name);
         } catch (Exception e) {
-            throw new IllegalArgumentException("Illegal name of key", e);
+            throw new IllegalArgumentException(illegalKeyName, e);
         }
     }
 
-    @Override
+   @Override
     public void removeTable(final String name) {
         if (!tableManager.basicTables.containsKey(name)) {
-            throw new IllegalArgumentException("There is no such table");
+            throw new IllegalArgumentException(illegalTableName);
         }
         try {
             boolean f = tableManager.drop(name);
         } catch (Exception e) {
-            throw new IllegalArgumentException("Illegal name of table", e);
+            throw new IllegalArgumentException(illegalTableName, e);
         }
     }
+
+    public Set<Map.Entry<String, DBaseTable>> entrySet() {
+        return getTableManager().tables.entrySet();
+    }
+
 }

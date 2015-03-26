@@ -1,22 +1,23 @@
 package ru.fizteh.fivt.students.hromov_igor.multifilemap.commands;
 
-import ru.fizteh.fivt.storage.strings.Table;
-import ru.fizteh.fivt.students.hromov_igor.multifilemap.*;
-import ru.fizteh.fivt.students.hromov_igor.multifilemap.base.TableManager;
-import ru.fizteh.fivt.students.hromov_igor.multifilemap.exception.ErrorHandler;
+public class Rollback extends ParentCommand {
 
-public class Rollback {
 
-    public static void run(String[] args, TableManager table) throws Exception {
-        if (args.length != 1) {
-            throw new Exception("Rollback : " + ErrorHandler.argNumHandler());
+    public Rollback(CommandState state) {
+        super(state);
+    }
+
+    @Override
+    public void run() {
+        if (state.usingTable == null) {
+            System.out.println("no table");
+        } else {
+            System.out.println(state.usingTable.rollback());
         }
-        if (table.currentTable == null) {
-            throw new Exception("Table : " + ErrorHandler.nullTableException());
-        }
-        String jTable = table.currentTable;
-        Table dBaseTable = table.basicTables.get(jTable);
-        System.out.println(dBaseTable.rollback());
-        table.saved = true;
+    }
+
+    @Override
+    public int requiredArgsNum() {
+        return 0;
     }
 }

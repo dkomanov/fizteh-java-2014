@@ -1,20 +1,35 @@
 package ru.fizteh.fivt.students.hromov_igor.multifilemap.commands;
 
-import ru.fizteh.fivt.students.hromov_igor.multifilemap.*;
-import ru.fizteh.fivt.students.hromov_igor.multifilemap.base.TableManager;
-import ru.fizteh.fivt.students.hromov_igor.multifilemap.exception.ErrorHandler;
+import ru.fizteh.fivt.students.hromov_igor.multifilemap.base.DBaseTable;
 
-public class Use {
+public class Use extends ParentCommand {
 
-    public static void run(String[] args, TableManager table) throws Exception {
-        if (args.length != 2) {
-            throw new Exception("Use : " + ErrorHandler.argNumHandler());
-        }
-        String jTable = table.currentTable;
-        if (jTable == null) {
-            table.use(args[1]);
+    private String tableName;
+
+    public Use(CommandState state) {
+        super(state);
+    }
+
+
+    @Override
+    public void run() {
+
+        if (state.base.getTable(tableName) == null) {
+            System.out.println(tableName + " not exists");
         } else {
-                table.use(args[1]);
+            state.usingTable = (DBaseTable)state.base.getTable(tableName);
+            System.out.println("using " + tableName);
         }
+    }
+
+
+    @Override
+    public int requiredArgsNum() {
+        return 1;
+    }
+
+    @Override
+    public void putArguments(String[] args) {
+        tableName = args[1];
     }
 }

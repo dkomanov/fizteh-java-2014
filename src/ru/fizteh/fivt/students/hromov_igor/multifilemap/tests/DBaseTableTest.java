@@ -66,18 +66,15 @@ public class DBaseTableTest {
     public void testSize() throws Exception {
         table.remove("1");
         table.remove("3");
-        int count = table.size();
         table.put("1", "2");
         table.put("3", "4");
         table.put("3", "5");
-        assertEquals(count + 2 , table.size());
+        assertEquals(3 , table.size());
         table.remove("1");
         table.remove("1");
         table.remove("3");
-        assertEquals(count, table.size());
+        assertEquals(0, table.size());
     }
-
-
 
     @Test
     public void testRollBack() throws Exception {
@@ -88,6 +85,9 @@ public class DBaseTableTest {
         table.remove("1");
         table.put("1", "5");
         assertEquals(5, table.rollback());
+        assertEquals("not found", table.get("1"));
+        assertEquals("not found", table.get("2"));
+        assertEquals("not found", table.get("3"));
     }
 
     @Test

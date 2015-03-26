@@ -1,15 +1,31 @@
 package ru.fizteh.fivt.students.hromov_igor.multifilemap.commands;
 
-import ru.fizteh.fivt.students.hromov_igor.multifilemap.base.TableManager;
-import ru.fizteh.fivt.students.hromov_igor.multifilemap.exception.ErrorHandler;
+public class Drop extends ParentCommand {
+    private String tableName;
 
-public class Drop {
-
-    public static void run(String[] args, TableManager table) throws Exception {
-        if (args.length != 2) {
-            throw new Exception("Drop : " + ErrorHandler.argNumHandler());
-        }
-        boolean tableDrop = table.drop(args[1]);
+    public Drop(CommandState state) {
+        super(state);
     }
 
+
+    @Override
+    public void run() {
+        try {
+            if (state.base.getTable(tableName) == state.usingTable) {
+                state.usingTable = null;
+            }
+            state.base.removeTable(tableName);
+            System.out.println("dropped");
+        } catch (IllegalStateException e) {
+            System.out.println(tableName + " not exists");
+        }
+    }
+
+    public final void putArguments(String[] args) {
+        tableName = args[1];
+    }
+
+    public final int requiredArgsNum() {
+        return 1;
+    }
 }

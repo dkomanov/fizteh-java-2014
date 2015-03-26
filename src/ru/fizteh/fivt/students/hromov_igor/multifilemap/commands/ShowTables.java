@@ -1,15 +1,27 @@
 package ru.fizteh.fivt.students.hromov_igor.multifilemap.commands;
 
-import ru.fizteh.fivt.students.hromov_igor.multifilemap.*;
-import ru.fizteh.fivt.students.hromov_igor.multifilemap.base.TableManager;
-import ru.fizteh.fivt.students.hromov_igor.multifilemap.exception.ErrorHandler;
+import ru.fizteh.fivt.students.hromov_igor.multifilemap.base.DBaseTable;
 
-public class ShowTables {
+import java.util.Map;
 
-    public static void run(String[] args, TableManager table) throws Exception {
-        if (args.length != 2) {
-            throw new Exception("ShowTables : " + ErrorHandler.argNumHandler());
+public class ShowTables extends ParentCommand {
+
+
+    public ShowTables(CommandState state) {
+        super(state);
+    }
+
+    @Override
+    public void run() {
+        for (Map.Entry<String, DBaseTable> entry: state.base.entrySet()) {
+            String name = entry.getKey();
+            int size = entry.getValue().size();
+            System.out.println(name + " " + size);
         }
-        table.showTables(args);
+    }
+
+    @Override
+    public int requiredArgsNum() {
+        return 1;
     }
 }

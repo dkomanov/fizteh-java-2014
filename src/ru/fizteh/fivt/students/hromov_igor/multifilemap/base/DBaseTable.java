@@ -1,22 +1,50 @@
 package ru.fizteh.fivt.students.hromov_igor.multifilemap.base;
 
 import ru.fizteh.fivt.storage.strings.Table;
+import ru.fizteh.fivt.students.hromov_igor.multifilemap.exception.DirCreateException;
 
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.List;
+import java.nio.file.Paths;
+import java.util.*;
 import java.util.Map.Entry;
 
 public class DBaseTable implements Table {
 
     static final int SIZE = 16;
 
-    private BaseTable table;
+    static private String dirExpansion = ".dir";
+    static private String fileExpansion = ".dat";
+    public String tableName;
+    public Path path;
+    public DataBase[][] tableDateBase;
+    public Map<String, String> keys;
+    public Map<String, String> puted;
+    public Set<String> removed;
 
-    public DBaseTable(BaseTable baseTable) {
-        table = baseTable;
+    public DBaseTable() {
+        keys = new HashMap<>();
+        puted = new HashMap<>();
+        removed = new HashSet<>();
+        tableDateBase = new DataBase[SIZE][SIZE];
     }
 
+    public DBaseTable(String name, Path pathTable) {
+        keys = new HashMap<>();
+        puted = new HashMap<>();
+        removed = new HashSet<>();
+        tableName = name;
+        path = pathTable.resolve(Paths.get(name));
+        tableDateBase = new DataBase[SIZE][SIZE];
+    }
+
+    public DBaseTable(DBaseTable DBt) {
+        keys = DBt.keys;
+        puted = DBt.puted;
+        removed = DBt.removed;
+        tableName = DBt.tableName;
+        path = DBt.path;
+        tableDateBase = DBt.tableDateBase;
+    }
 
     @Override
     public String get(String key) throws IllegalArgumentException {
@@ -24,15 +52,15 @@ public class DBaseTable implements Table {
             throw new IllegalArgumentException("No key, null");
         }
 
-        if (table.keys.containsKey(key)) {
-            return (table.keys.get(key));
+        if (keys.containsKey(key)) {
+            return (keys.get(key));
         }
         return null;
      }
 
     @Override
     public int size() {
-        return table.keys.size();
+        return keys.size();
      }
 
     @Override
@@ -40,57 +68,60 @@ public class DBaseTable implements Table {
         if (key == null) {
             throw new IllegalArgumentException("No key, null");
         }
-        table.puted.put(key, value);
-        return table.keys.get(key);
+        puted.put(key, value);
+        return keys.get(key);
     }
 
     @Override
     public String getName() {
-        return table.tableName;
+        return tableName;
      }
 
     @Override
-    public String remove(String key) throws IllegalArgumentException {
-        if (!table.keys.containsKey(key)) {
+    public String remove(String key) {
+        if (key == null) {
+            throw new IllegalArgumentException();
+        }
+        if (!keys.containsKey(key)) {
             return null;
         }
-        table.removed.add(key);
-        return table.keys.get(key);
+        removed.add(key);
+        return keys.get(key);
     }
 
     @Override
     public int commit() {
-        if (table.puted.size() == 0 && table.removed.size() == 0) {
+        if (puted.size() == 0 && removed.size() == 0) {
             return 0;
          }
         byte b;
         int nDirectory;
         int nFile;
-        for (Entry<String, String> pair : table.puted.entrySet()) {
+        for (Entry<String, String> pair : puted.entrySet()) {
             b = pair.getKey().getBytes()[0];
             nDirectory = b % SIZE;
             nFile = b / SIZE % SIZE;
 
-            if (table.tableDateBase[nDirectory][nFile] == null) {
+            if (tableDateBase[nDirectory][nFile] == null) {
                 String s;
                 s = String.valueOf(nDirectory);
-                s = s.concat(".dir");
-                Path pathDir = table.path;
+                s = s.concat(dirExpansion);
+                Path pathDir = path;
                 pathDir = pathDir.resolve(s);
                 try {
                     if (!pathDir.toFile().exists()) {
                         try {
                             pathDir.toFile().mkdir();
                         } catch (Exception e) {
-                            System.err.println(e.getMessage());
+                            throw new DirCreateException(e);
                         }
                     }
                 } catch (Exception e) {
-                    System.err.println(e.getMessage());
+                    throw new DirCreateException(e);
                 }
 
                 s = String.valueOf(nFile);
-                s = s.concat(".dat");
+                s = s.concat(fileExpansion);
                 Path pathFile = pathDir.resolve(s);
                 try {
                     if (!pathFile.toFile().exists()) {
@@ -100,63 +131,63 @@ public class DBaseTable implements Table {
                             System.err.println(e.getMessage());
                         }
                     }
-                    table.tableDateBase[nDirectory][nFile] =
+                    tableDateBase[nDirectory][nFile] =
                             new DataBase(pathFile.toString());
                 } catch (Exception e) {
                     System.err.println(e.getMessage());
                 }
             }
             try {
-                table.tableDateBase[nDirectory][nFile].
+                tableDateBase[nDirectory][nFile].
                         put(pair.getKey(), pair.getValue());
             } catch (Exception e) {
                 System.err.println("Table error");
             }
-            if (table.keys.containsKey(pair.getKey())) {
-                table.keys.remove(pair.getKey());
+            if (keys.containsKey(pair.getKey())) {
+                keys.remove(pair.getKey());
             }
-            table.keys.put(pair.getKey(), pair.getValue());
+            keys.put(pair.getKey(), pair.getValue());
         }
-        int size = table.puted.size();
-        table.puted.clear();
-        for (String key : table.removed) {
+        int size = puted.size();
+        puted.clear();
+        for (String key : removed) {
             b = key.getBytes()[0];
             nDirectory = b % SIZE;
             nFile = b / SIZE % SIZE;
             try {
-                table.tableDateBase[nDirectory][nFile].remove(key);
+                tableDateBase[nDirectory][nFile].remove(key);
             } catch (Exception e) {
-                System.err.println("Teble error");
+                System.err.println("Table error");
             }
-            table.keys.remove(key);
+            keys.remove(key);
         }
-        table.removed.clear();
+        removed.clear();
         try {
         for (int i = 0; i < SIZE; i++) {
             for (int j = 0; j < SIZE; j++) {
-                if (table.tableDateBase[i][j] != null) {
-                    table.tableDateBase[i][j].close();
+                if (tableDateBase[i][j] != null) {
+                    tableDateBase[i][j].close();
                 }
             }
         }
         } catch (Exception e) {
-            System.err.println("Teble error");
+            System.err.println("Table error");
         }
         return size;
     }
 
     @Override
     public int rollback() {
-        int size = table.puted.size();
-        table.removed.clear();
-        table.puted.clear();
+        int size = puted.size();
+        removed.clear();
+        puted.clear();
         return size;
      }
 
     @Override
     public List<String> list() {
         List<String> list = new ArrayList<>();
-        for (String key : table.keys.keySet()) {
+        for (String key : keys.keySet()) {
             list.add(key);
         }
         return list;

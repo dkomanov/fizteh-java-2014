@@ -1,23 +1,21 @@
 package ru.fizteh.fivt.students.hromov_igor.multifilemap.base;
 
-import ru.fizteh.fivt.students.hromov_igor.multifilemap.exception.ErrorHandler;
+import ru.fizteh.fivt.students.hromov_igor.multifilemap.exception.ArgNumException;
+import ru.fizteh.fivt.students.hromov_igor.multifilemap.exception.FileCreateException;
+import ru.fizteh.fivt.students.hromov_igor.multifilemap.exception.WriteToFileException;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
-import java.io.File;
-import java.nio.file.Files;
-import java.io.ByteArrayOutputStream;
-import java.util.Map;
+import java.util.*;
 
 public class DataBase {
 
+    private static String ENCODING = "UTF-8";
     public Path dBasePath;
     public Map<String, String> dBase;
     public DataBase(String name) throws Exception {
@@ -25,7 +23,7 @@ public class DataBase {
         dBase = new HashMap<>();
         File file = new File(name);
         if (file.isDirectory()) {
-            throw new Exception("Can't create file" + name + ": is a directory");
+            throw new FileCreateException();
         }
         if (file.exists()) {
             RandomAccessFile dbFile = new RandomAccessFile(dBasePath.toString(), "r");
@@ -39,7 +37,7 @@ public class DataBase {
             try {
                 Files.createFile(file.toPath());
             } catch (IOException e) {
-                throw new Exception("MakeDbFile: can't create file");
+                throw new FileCreateException();
             }
         }
     }
@@ -57,7 +55,7 @@ public class DataBase {
 
     public void get(String[] args) throws Exception {
         if (args.length > 2) {
-            throw new Exception("Put : " + ErrorHandler.argNumHandler());
+            throw new ArgNumException();
         }
         String key = args[1];
         if (dBase.containsKey(key)) {
@@ -127,7 +125,7 @@ public class DataBase {
                 bytesCounter++;
             }
             if (bytesBuffer.size() > 0) {
-                put(keyIter.next(), bytesBuffer.toString("UTF-8"));
+                put(keyIter.next(), bytesBuffer.toString(ENCODING));
                 bytesBuffer.reset();
             } else {
                 throw new Exception();
@@ -140,12 +138,8 @@ public class DataBase {
         try (RandomAccessFile dbFile = new RandomAccessFile(dBasePath.toString(), "rw")) {
             writeDbToFile(dbFile);
         } catch (Exception e) {
-            throw new Exception("Error writing database to file");
+            throw new WriteToFileException();
         }
-    }
-
-    public int rowCount() throws Exception {
-        return dBase.size();
     }
 
 }

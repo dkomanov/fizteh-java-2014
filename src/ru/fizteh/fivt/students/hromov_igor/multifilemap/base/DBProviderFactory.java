@@ -7,15 +7,10 @@ public class DBProviderFactory implements TableProviderFactory {
 
     @Override
     public TableProvider create(String dir) {
-        try {
-            if (dir == null) {
-                throw new Exception();
-            }
-            return new DBProvider(dir);
-        } catch (Exception e) {
-            System.err.println("Null Factory");
-            System.exit(1);
-            return null;
+
+        if (dir == null) {
+            throw new IllegalArgumentException();
         }
+        return new DBProvider(dir);
     }
 }
