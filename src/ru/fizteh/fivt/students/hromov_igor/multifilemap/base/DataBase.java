@@ -15,7 +15,7 @@ import java.util.*;
 
 public class DataBase {
 
-    private static String ENCODING = "UTF-8";
+    private static String encoding = "UTF-8";
     public Path dBasePath;
     public Map<String, String> dBase;
     public DataBase(String name) throws Exception {
@@ -125,7 +125,7 @@ public class DataBase {
                 bytesCounter++;
             }
             if (bytesBuffer.size() > 0) {
-                put(keyIter.next(), bytesBuffer.toString(ENCODING));
+                put(keyIter.next(), bytesBuffer.toString(encoding));
                 bytesBuffer.reset();
             } else {
                 throw new Exception();

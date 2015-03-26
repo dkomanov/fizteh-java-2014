@@ -10,7 +10,7 @@ public class Put extends ParentCommand {
     }
 
     @Override
-    public void run(){
+    public void run() {
         if (state.usingTable == null) {
             System.out.println("no table");
         } else {

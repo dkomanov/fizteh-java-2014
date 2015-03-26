@@ -8,15 +8,15 @@ import java.util.Scanner;
 
 public class BatchParser {
 
-    private static final String InputBegin = "$ ";
-    private static final String SpaceDelete = "\\s+";
+    private static String inputBegin = "$ ";
+    private static String spaceDelete = "\\s+";
 
     public static void run(HashMap<String, ParentCommand> listCommands) {
         Scanner in = new Scanner(System.in);
         try {
             while (true) {
-                System.out.print(InputBegin);
-                String[] commands = in.nextLine().trim().split(SpaceDelete);
+                System.out.print(inputBegin);
+                String[] commands = in.nextLine().trim().split(spaceDelete);
                 for (int i = 0; i < commands.length; ++i) {
                     commands[i].trim();
                 }

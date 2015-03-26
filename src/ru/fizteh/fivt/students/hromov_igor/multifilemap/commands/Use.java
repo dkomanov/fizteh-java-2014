@@ -17,7 +17,7 @@ public class Use extends ParentCommand {
         if (state.base.getTable(tableName) == null) {
             System.out.println(tableName + " not exists");
         } else {
-            state.usingTable = (DBaseTable)state.base.getTable(tableName);
+            state.usingTable = (DBaseTable) state.base.getTable(tableName);
             System.out.println("using " + tableName);
         }
     }

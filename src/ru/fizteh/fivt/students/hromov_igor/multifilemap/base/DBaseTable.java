@@ -12,8 +12,8 @@ public class DBaseTable implements Table {
 
     static final int SIZE = 16;
 
-    static private String dirExpansion = ".dir";
-    static private String fileExpansion = ".dat";
+    private String dirExpansion = ".dir";
+    private String fileExpansion = ".dat";
     public String tableName;
     public Path path;
     public DataBase[][] tableDateBase;
@@ -37,13 +37,13 @@ public class DBaseTable implements Table {
         tableDateBase = new DataBase[SIZE][SIZE];
     }
 
-    public DBaseTable(DBaseTable DBt) {
-        keys = DBt.keys;
-        puted = DBt.puted;
-        removed = DBt.removed;
-        tableName = DBt.tableName;
-        path = DBt.path;
-        tableDateBase = DBt.tableDateBase;
+    public DBaseTable(DBaseTable dBt) {
+        keys = dBt.keys;
+        puted = dBt.puted;
+        removed = dBt.removed;
+        tableName = dBt.tableName;
+        path = dBt.path;
+        tableDateBase = dBt.tableDateBase;
     }
 
     @Override
