@@ -20,8 +20,7 @@ public class DBProvider implements TableProvider {
     private Path path;
     private Map<String, DBaseTable> tables;
     private Map<String, Table> basicTables;
-    private static final String ILLEGAL_KEY_NAME = "Illegal name of key";
-    private static final String ILLEGAL_TABLE_NAME = "Illegal name of table";
+    private static final String ILLEGAL_NAME = "Illegal name";
 
 
 
@@ -69,15 +68,11 @@ public class DBProvider implements TableProvider {
 
     public DBProvider(String dir) {
         DBaseTable usingTable;
-        try {
-            path = Paths.get(dir);
-            if (!path.toFile().exists()) {
-                path.toFile().mkdir();
-            }
-            if (!path.toFile().isDirectory()) {
-                throw new IllegalArgumentException();
-            }
-        } catch (Exception e) {
+        path = Paths.get(dir);
+        if (!path.toFile().exists()) {
+            path.toFile().mkdir();
+        }
+        if (!path.toFile().isDirectory()) {
             throw new IllegalArgumentException();
         }
         tables = new HashMap<>();
@@ -131,34 +126,25 @@ public class DBProvider implements TableProvider {
             if (name == null) {
                 throw new IllegalArgumentException();
             }
-            try {
-                if (!tables.containsKey(name)) {
-                    tables.put(name, new DBaseTable(name, path));
-                    try {
-                        tables.put(name, new DBaseTable(name, path));
-
-                        basicTables.put(name, new DBaseTable(tables.get(name)));
-                        Path newPath = path.resolve(name);
-                        newPath.toFile().mkdir();
-                    } catch (SecurityException e) {
-                        throw new IllegalArgumentException("incorrect name", e);
-                    }
+            if (!tables.containsKey(name)) {
+                tables.put(name, new DBaseTable(name, path));
+                tables.put(name, new DBaseTable(name, path));
+                basicTables.put(name, new DBaseTable(tables.get(name)));
+                Path newPath = path.resolve(name);
+                newPath.toFile().mkdir();
                 } else {
                     throw new IllegalArgumentException("File already exists");
                 }
-            } catch (RuntimeException e) {
-                throw new IllegalArgumentException("Illegal table name", e);
-            }
-            return basicTables.get(name);
-        } catch (RuntimeException e) {
-            throw new IllegalArgumentException(ILLEGAL_KEY_NAME, e);
+        } catch (SecurityException | IllegalArgumentException e) {
+            throw new IllegalArgumentException(ILLEGAL_NAME, e);
         }
+        return basicTables.get(name);
     }
 
    @Override
     public void removeTable(final String name) {
         if (!basicTables.containsKey(name)) {
-            throw new IllegalArgumentException(ILLEGAL_TABLE_NAME);
+            throw new IllegalArgumentException(ILLEGAL_NAME);
         }
         try {
             if (name == null) {
@@ -173,7 +159,7 @@ public class DBProvider implements TableProvider {
                 basicTables.remove(name);
             }
         } catch (Exception e) {
-            throw new IllegalArgumentException(ILLEGAL_TABLE_NAME, e);
+            throw new IllegalArgumentException(ILLEGAL_NAME, e);
         }
     }
 
