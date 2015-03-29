@@ -15,7 +15,6 @@ public class DBProvider implements TableProvider {
 
     private static final String DIR_EXTENTION = ".dir";
     private static final String FILE_EXTENTION = ".dat";
-    private String currentTable;
     private Path path;
     private Map<String, DBaseTable> tables;
     private Map<String, Table> basicTables;
@@ -25,7 +24,6 @@ public class DBProvider implements TableProvider {
 
     public DBProvider(String dir) {
         DBaseTable usingTable;
-        currentTable = null;
         try {
             path = Paths.get(dir);
             if (!path.toFile().exists()) {
@@ -53,13 +51,13 @@ public class DBProvider implements TableProvider {
             usingTable = new DBaseTable();
             for (int i = 0; i <  usingTable.SIZE; i++) {
                 for (int j = 0; j < usingTable.SIZE; j++) {
-                    p = tables.get(curDir).path.resolve(i + DIR_EXTENTION);
+                    p = tables.get(curDir).getPath().resolve(i + DIR_EXTENTION);
                     s = String.valueOf(j);
                     s = s.concat(FILE_EXTENTION);
                     p = p.resolve(s);
                     if (p.toFile().exists()) {
                         try {
-                            tables.get(curDir).tableDateBase[i][j] = new DBaseTableChunk(p.toString());
+                            tables.get(curDir).getTableDateBase()[i][j] = new DBaseTableChunk(p.toString());
                         } catch (Exception e) {
                             throw new IllegalArgumentException("Can't create new db");
                         }
@@ -93,9 +91,7 @@ public class DBProvider implements TableProvider {
                 throw new IllegalArgumentException();
             }
             try {
-                boolean flag = tables.containsKey(name);
-                if (!flag) {
-                    System.out.println("created");
+                if (!tables.containsKey(name)) {
                     tables.put(name, new DBaseTable(name, path));
                     try {
                         tables.put(name, new DBaseTable(name, path));
@@ -127,8 +123,7 @@ public class DBProvider implements TableProvider {
             if (name == null) {
                 throw new IllegalArgumentException();
             }
-            boolean tableContainsKey = tables.containsKey(name);
-            if (!tableContainsKey) {
+            if (!tables.containsKey(name)) {
                 throw new IllegalArgumentException("File not exists");
             } else {
                 Path newPath = path.resolve(name);

@@ -10,13 +10,24 @@ import java.nio.file.Paths;
 import java.util.*;
 import java.util.Map.Entry;
 
-class IntPair {
-    final int x;
-    final int y;
-    IntPair(int b, int size) {
-        this.x = b % size;
-        this.y = b / size % size;
+class DirectoryAndFileDescriptor {
+    private int directoryIndex;
+    private int fileIndex;
+
+    DirectoryAndFileDescriptor(int b, int size) {
+        this.directoryIndex = b % size;
+        this.fileIndex = b / size % size;
     }
+
+
+    public int getDirectoryIndex() {
+        return directoryIndex;
+    }
+
+    public int getFileIndex() {
+        return fileIndex;
+    }
+
 }
 
 public class DBaseTable implements Table {
@@ -25,12 +36,12 @@ public class DBaseTable implements Table {
 
     private String dirExpansion = ".dir";
     private String fileExpansion = ".dat";
-    public String tableName;
-    public Path path;
-    public DBaseTableChunk[][] tableDateBase;
-    public Map<String, String> keys;
-    public Map<String, String> puted;
-    public Set<String> removed;
+    private String tableName;
+    private Path path;
+    private DBaseTableChunk[][] tableDateBase;
+    private Map<String, String> keys;
+    private Map<String, String> puted;
+    private Set<String> removed;
 
     public DBaseTable() {
         keys = new HashMap<>();
@@ -52,6 +63,14 @@ public class DBaseTable implements Table {
         tableName = dataBaseTable.tableName;
         path = dataBaseTable.path;
         tableDateBase = dataBaseTable.tableDateBase;
+    }
+
+    public DBaseTableChunk[][] getTableDateBase() {
+        return tableDateBase;
+    }
+
+    public Path getPath() {
+        return path;
     }
 
     @Override
@@ -104,14 +123,11 @@ public class DBaseTable implements Table {
         if (puted.size() == 0 && removed.size() == 0) {
             return 0;
          }
-        byte b;
-        int nDirectory;
-        int nFile;
         for (Entry<String, String> pair : puted.entrySet()) {
-            IntPair place = new IntPair(pair.getKey().getBytes()[0], SIZE);
+            DirectoryAndFileDescriptor place = new DirectoryAndFileDescriptor(pair.getKey().getBytes()[0], SIZE);
 
-            if (tableDateBase[place.x][place.y] == null) {
-                String s = String.valueOf(place.x).concat(dirExpansion);
+            if (tableDateBase[place.getDirectoryIndex()][place.getFileIndex()] == null) {
+                String s = String.valueOf(place.getDirectoryIndex()).concat(dirExpansion);
                 Path pathDir = path;
                 pathDir = pathDir.resolve(s);
                 if (!pathDir.toFile().exists()) {
@@ -122,8 +138,7 @@ public class DBaseTable implements Table {
                     }
                 }
 
-                s = String.valueOf(place.y);
-                s = s.concat(fileExpansion);
+                s = String.valueOf(place.getFileIndex()).concat(fileExpansion);
                 Path pathFile = pathDir.resolve(s);
                 try {
                     if (!pathFile.toFile().exists()) {
@@ -133,14 +148,14 @@ public class DBaseTable implements Table {
                             throw new IllegalArgumentException("Can't create file");
                         }
                     }
-                    tableDateBase[place.x][place.y] =
+                    tableDateBase[place.getDirectoryIndex()][place.getFileIndex()] =
                             new DBaseTableChunk(pathFile.toString());
                 } catch (Exception e) {
                     throw new IllegalArgumentException("File doesn't exist");
                 }
             }
             try {
-                tableDateBase[place.x][place.y].
+                tableDateBase[place.getDirectoryIndex()][place.getFileIndex()].
                         put(pair.getKey(), pair.getValue());
             } catch (Exception e) {
                 throw new IllegalArgumentException("Table error");
@@ -153,11 +168,11 @@ public class DBaseTable implements Table {
         int size = puted.size();
         puted.clear();
         for (String key : removed) {
-            IntPair place = new IntPair(key.getBytes()[0], SIZE);
+            DirectoryAndFileDescriptor place = new DirectoryAndFileDescriptor(key.getBytes()[0], SIZE);
             try {
-                tableDateBase[place.x][place.y].remove(key);
+                tableDateBase[place.getDirectoryIndex()][place.getFileIndex()].remove(key);
             } catch (Exception e) {
-                throw new IllegalArgumentException(e);
+                throw new RuntimeException(e);
             }
             keys.remove(key);
         }
@@ -166,12 +181,12 @@ public class DBaseTable implements Table {
         for (int i = 0; i < SIZE; i++) {
             for (int j = 0; j < SIZE; j++) {
                 if (tableDateBase[i][j] != null) {
-                    tableDateBase[i][j].close();
+                    tableDateBase[i][j].save();
                 }
             }
         }
         } catch (IOException e) {
-            throw new IllegalArgumentException(e);
+            throw new RuntimeException(e);
         }
         return size;
     }

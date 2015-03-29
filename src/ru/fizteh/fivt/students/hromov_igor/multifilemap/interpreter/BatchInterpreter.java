@@ -28,7 +28,7 @@ public class BatchInterpreter {
             }
         } catch (ExitCommandException e) {
             in.close();
-            System.exit(0);
+            return;
         } catch (NoSuchElementException e) {
             System.err.println(e.getMessage());
         }

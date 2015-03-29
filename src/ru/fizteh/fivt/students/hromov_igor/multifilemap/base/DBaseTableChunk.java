@@ -10,7 +10,7 @@ import java.util.*;
 
 public class DBaseTableChunk {
 
-    private static final String DIR_EXTENSION = "UTF-8";
+    private static final String ENCODING = "UTF-8";
     private Path dBasePath;
     private Map<String, String> dBase;
 
@@ -41,25 +41,15 @@ public class DBaseTableChunk {
 
     public void put(String key, String value) throws Exception {
         if (dBase.containsKey(key)) {
-            System.out.println(dBase.get(key));
             dBase.remove(key);
-            dBase.put(key, value);
-        } else {
-            dBase.put(key, value);
         }
+            dBase.put(key, value);
     }
 
     public void get(String[] args) throws Exception {
-        if (args.length > 2) {
-            throw new ArgNumException();
-        }
         String key = args[1];
-        if (dBase.containsKey(key)) {
-            System.out.println("found");
-            System.out.println(dBase.get(key));
-        } else {
-            System.out.println("not found");
-        }
+        //if (dBase.containsKey(key))
+            //return dBase.get(key);
     }
 
 
@@ -74,7 +64,7 @@ public class DBaseTableChunk {
         Set<String> keys = dBase.keySet();
         List<Integer> offsetsPos = new LinkedList<Integer>();
         for (String currentKey : keys) {
-            dbFile.write(currentKey.getBytes(DIR_EXTENSION));
+            dbFile.write(currentKey.getBytes(ENCODING));
             dbFile.write('\0');
             offsetsPos.add((int) dbFile.getFilePointer());
             dbFile.writeInt(0);
@@ -82,7 +72,7 @@ public class DBaseTableChunk {
         List<Integer> offsets = new LinkedList<Integer>();
         for (String currentKey : keys) {
             offsets.add((int) dbFile.getFilePointer());
-            dbFile.write(dBase.get(currentKey).getBytes(DIR_EXTENSION));
+            dbFile.write(dBase.get(currentKey).getBytes(ENCODING));
         }
         Iterator<Integer> offIter = offsets.iterator();
         for (int offsetPos : offsetsPos) {
@@ -110,7 +100,7 @@ public class DBaseTableChunk {
                 offsets.add(dbFile.readInt());
             }
             bytesCounter += 4;
-            keys.add(bytesBuffer.toString(DIR_EXTENSION));
+            keys.add(bytesBuffer.toString(ENCODING));
             bytesBuffer.reset();
         } while (bytesCounter < firstOffset);
         offsets.add((int) dbFile.length());
@@ -121,16 +111,16 @@ public class DBaseTableChunk {
                 bytesCounter++;
             }
             if (bytesBuffer.size() > 0) {
-                put(keyIter.next(), bytesBuffer.toString(DIR_EXTENSION));
+                put(keyIter.next(), bytesBuffer.toString(ENCODING));
                 bytesBuffer.reset();
             } else {
-                throw new Exception();
+                throw new IOException();
             }
         }
         bytesBuffer.close();
     }
 
-    public void close() throws IOException {
+    public void save() throws IOException {
         try (RandomAccessFile dbFile = new RandomAccessFile(dBasePath.toString(), "rw")) {
             writeDbToFile(dbFile);
         } catch (FileNotFoundException e) {
