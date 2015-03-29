@@ -1,7 +1,5 @@
 package ru.fizteh.fivt.students.hromov_igor.multifilemap.interpreter;
 
-
-import ru.fizteh.fivt.students.hromov_igor.multifilemap.commands.Exit;
 import ru.fizteh.fivt.students.hromov_igor.multifilemap.interpreter.exception.ExitCommandException;
 
 import java.util.HashMap;
@@ -9,7 +7,8 @@ import java.util.NoSuchElementException;
 
 public class Parser {
 
-    public static void parseAndExecute(String[] commands, HashMap<String, BaseCommand> listCommands) throws ExitCommandException {
+    public static void parseAndExecute(String[] commands, 
+        HashMap<String, BaseCommand> listCommands) throws ExitCommandException {
         try {
             BaseCommand command = null;
             if (commands[0].equals("")) {
