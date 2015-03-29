@@ -51,8 +51,8 @@ public class DBProvider implements TableProvider {
             String s;
             Path p;
             usingTable = new DBaseTable();
-            for (int i = 0; i <  usingTable.SIZE; i++) {
-                for (int j = 0; j < usingTable.SIZE; j++) {
+            for (int i = 0; i <  usingTable.size; i++) {
+                for (int j = 0; j < usingTable.size; j++) {
                     p = tables.get(curDir).path.resolve(i + DIR_EXTENTION);
                     s = String.valueOf(j);
                     s = s.concat(FILE_EXTENTION);
