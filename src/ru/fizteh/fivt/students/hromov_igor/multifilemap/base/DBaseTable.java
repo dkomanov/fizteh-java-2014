@@ -32,9 +32,6 @@ class DirectoryAndFileDescriptor {
 public class DBaseTable implements Table {
 
     static final int SIZE = 16;
-
-    private String dirExpansion = ".dir";
-    private String fileExpansion = ".dat";
     private String tableName;
     private Path path;
     private DBaseTableChunk[][] tableDateBase;
@@ -126,7 +123,7 @@ public class DBaseTable implements Table {
             DirectoryAndFileDescriptor place = new DirectoryAndFileDescriptor(pair.getKey().getBytes()[0], SIZE);
 
             if (tableDateBase[place.getDirectoryIndex()][place.getFileIndex()] == null) {
-                String dirName = String.valueOf(place.getDirectoryIndex()).concat(dirExpansion);
+                String dirName = String.valueOf(place.getDirectoryIndex()).concat(DBProvider.DIR_EXTENTION);
                 Path pathDir = path;
                 pathDir = pathDir.resolve(dirName);
                 if (!pathDir.toFile().exists()) {
@@ -137,7 +134,7 @@ public class DBaseTable implements Table {
                     }
                 }
 
-                String fileName = String.valueOf(place.getFileIndex()).concat(fileExpansion);
+                String fileName = String.valueOf(place.getFileIndex()).concat(DBProvider.FILE_EXTENTION);
                 Path pathFile = pathDir.resolve(fileName);
                 try {
                     if (!pathFile.toFile().exists()) {

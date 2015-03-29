@@ -28,9 +28,9 @@ public class ShowTables extends ParentCommand {
 
     @Override
     public void putArguments(String[] args) {
-        if (args[1].equals("tables")){
+        if (args[1].equals("tables")) {
             isShowTable = true;
-        };
+        }
     }
 
     @Override
