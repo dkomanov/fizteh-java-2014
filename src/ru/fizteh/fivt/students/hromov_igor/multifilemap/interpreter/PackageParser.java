@@ -26,9 +26,6 @@ public class PackageParser {
                     return;
                 }
                 String[] commands = current.toArray(new String[current.size()]);
-                if (commands[0].equals("show")) {
-                    commands[0] += "_" + commands[1];
-                }
                 Parser.parseAndExecute(commands, listCommands);
             }
         } catch (ExitCommandException e) {

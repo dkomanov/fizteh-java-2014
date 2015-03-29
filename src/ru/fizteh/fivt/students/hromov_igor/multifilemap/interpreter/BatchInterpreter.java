@@ -21,9 +21,6 @@ public class BatchInterpreter {
                 for (int i = 0; i < commands.length; ++i) {
                     commands[i].trim();
                 }
-                if (commands[0].equals("show")) {
-                    commands[0] += "_" + commands[1];
-                }
                 Parser.parseAndExecute(commands, listCommands);
             }
         } catch (ExitCommandException e) {
