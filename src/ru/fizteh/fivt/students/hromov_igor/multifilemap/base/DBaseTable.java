@@ -143,13 +143,13 @@ public class DBaseTable implements Table {
                     if (!pathFile.toFile().exists()) {
                         try {
                             pathFile.toFile().createNewFile();
-                        } catch (Exception e) {
+                        } catch (IOException e) {
                             throw new RuntimeException("Can't create file", e);
                         }
                     }
                     tableDateBase[place.getDirectoryIndex()][place.getFileIndex()] =
                             new DBaseTableChunk(pathFile.toString());
-                } catch (Exception e) {
+                } catch (IOException e) {
                     throw new RuntimeException("File doesn't exist");
                 }
             }
@@ -168,11 +168,7 @@ public class DBaseTable implements Table {
         puted.clear();
         for (String key : removed) {
             DirectoryAndFileDescriptor place = new DirectoryAndFileDescriptor(key.getBytes()[0], SIZE);
-            try {
-                tableDateBase[place.getDirectoryIndex()][place.getFileIndex()].remove(key);
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
+            tableDateBase[place.getDirectoryIndex()][place.getFileIndex()].remove(key);
             keys.remove(key);
         }
         removed.clear();

@@ -15,8 +15,8 @@ import java.util.Set;
 public class DBProvider implements TableProvider {
 
 
-    private static final String DIR_EXTENTION = ".dir";
-    private static final String FILE_EXTENTION = ".dat";
+    protected static final String DIR_EXTENTION = ".dir";
+    protected static final String FILE_EXTENTION = ".dat";
     private Path path;
     private Map<String, DBaseTable> tables;
     private Map<String, Table> basicTables;
@@ -117,11 +117,7 @@ public class DBProvider implements TableProvider {
     @Override
     public Table getTable(String name) {
         if (basicTables.containsKey(name)) {
-            try {
-                return basicTables.get(name);
-            } catch (IllegalArgumentException e) {
-                throw new IllegalArgumentException(ILLEGAL_KEY_NAME, e);
-            }
+            return basicTables.get(name);
         }
         return null;
     }

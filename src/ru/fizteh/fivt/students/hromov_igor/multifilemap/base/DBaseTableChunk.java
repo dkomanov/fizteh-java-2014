@@ -14,7 +14,7 @@ public class DBaseTableChunk {
     private Path dBasePath;
     private Map<String, String> dBase;
 
-    public DBaseTableChunk(String name) throws Exception {
+    public DBaseTableChunk(String name) throws IOException {
         dBasePath = Paths.get(name);
         dBase = new HashMap<>();
         File file = new File(name);
@@ -39,21 +39,15 @@ public class DBaseTableChunk {
     }
 
 
-    public void put(String key, String value) throws Exception {
+    public void put(String key, String value) {
         if (dBase.containsKey(key)) {
             dBase.remove(key);
         }
-            dBase.put(key, value);
-    }
-
-    public void get(String[] args) throws Exception {
-        String key = args[1];
-        //if (dBase.containsKey(key))
-            //return dBase.get(key);
+        dBase.put(key, value);
     }
 
 
-    public void remove(String key) throws Exception {
+    public void remove(String key) {
         if (dBase.containsKey(key)) {
             dBase.remove(key);
         }
@@ -81,7 +75,7 @@ public class DBaseTableChunk {
         }
     }
 
-    public void readDbFromFile(final RandomAccessFile dbFile) throws Exception {
+    public void readDbFromFile(final RandomAccessFile dbFile) throws IOException {
         ByteArrayOutputStream bytesBuffer = new ByteArrayOutputStream();
         List<Integer> offsets = new LinkedList<Integer>();
         List<String> keys = new LinkedList<String>();
