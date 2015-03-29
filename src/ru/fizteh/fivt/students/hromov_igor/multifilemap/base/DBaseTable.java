@@ -21,7 +21,7 @@ class IntPair {
 
 public class DBaseTable implements Table {
 
-    static final int size = 16;
+    static final int SIZE = 16;
 
     private String dirExpansion = ".dir";
     private String fileExpansion = ".dat";
@@ -36,7 +36,7 @@ public class DBaseTable implements Table {
         keys = new HashMap<>();
         puted = new HashMap<>();
         removed = new HashSet<>();
-        tableDateBase = new DBaseTableChunk[size][size];
+        tableDateBase = new DBaseTableChunk[SIZE][SIZE];
     }
 
     public DBaseTable(String name, Path pathTable) {
@@ -108,7 +108,7 @@ public class DBaseTable implements Table {
         int nDirectory;
         int nFile;
         for (Entry<String, String> pair : puted.entrySet()) {
-            IntPair place = new IntPair(pair.getKey().getBytes()[0], size);
+            IntPair place = new IntPair(pair.getKey().getBytes()[0], SIZE);
 
             if (tableDateBase[place.x][place.y] == null) {
                 String s = String.valueOf(place.x).concat(dirExpansion);
@@ -153,7 +153,7 @@ public class DBaseTable implements Table {
         int size = puted.size();
         puted.clear();
         for (String key : removed) {
-            IntPair place = new IntPair(key.getBytes()[0], size);
+            IntPair place = new IntPair(key.getBytes()[0], SIZE);
             try {
                 tableDateBase[place.x][place.y].remove(key);
             } catch (Exception e) {
@@ -163,8 +163,8 @@ public class DBaseTable implements Table {
         }
         removed.clear();
         try {
-        for (int i = 0; i < size; i++) {
-            for (int j = 0; j < size; j++) {
+        for (int i = 0; i < SIZE; i++) {
+            for (int j = 0; j < SIZE; j++) {
                 if (tableDateBase[i][j] != null) {
                     tableDateBase[i][j].close();
                 }
