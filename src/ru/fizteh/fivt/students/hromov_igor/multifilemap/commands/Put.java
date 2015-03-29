@@ -11,11 +11,11 @@ public class Put extends ParentCommand {
 
     @Override
     public void run() {
-        if (state.usingTable == null) {
+        if (state.getUsingTable() == null) {
             System.out.println("no table");
         } else {
             String result = null;
-            result = state.usingTable.put(key, value);
+            result = state.getUsingTable().put(key, value);
             if (result == null) {
                 System.out.println("new");
             } else {

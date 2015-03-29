@@ -11,7 +11,7 @@ public class Create extends ParentCommand {
 
     @Override
     public void run() {
-        if (state.base.createTable(tableName) == null) {
+        if (state.getBase().createTable(tableName) == null) {
             System.out.println(tableName + " exists");
         } else {
             System.out.println("created");

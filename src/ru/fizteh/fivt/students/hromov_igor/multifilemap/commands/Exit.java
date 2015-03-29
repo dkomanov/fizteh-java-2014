@@ -1,5 +1,7 @@
 package ru.fizteh.fivt.students.hromov_igor.multifilemap.commands;
 
+import ru.fizteh.fivt.students.hromov_igor.multifilemap.interpreter.exception.ExitCommandException;
+
 public class Exit extends ParentCommand {
 
     public Exit(CommandState state) {
@@ -8,7 +10,7 @@ public class Exit extends ParentCommand {
 
     @Override
     public void run() {
-        throw new IllegalMonitorStateException();
+        throw new ExitCommandException();
     }
 
     @Override

@@ -1,24 +1,20 @@
 package ru.fizteh.fivt.students.hromov_igor.multifilemap.base;
 
-import ru.fizteh.fivt.students.hromov_igor.multifilemap.exception.ArgNumException;
-import ru.fizteh.fivt.students.hromov_igor.multifilemap.exception.FileCreateException;
-import ru.fizteh.fivt.students.hromov_igor.multifilemap.exception.WriteToFileException;
+import ru.fizteh.fivt.students.hromov_igor.multifilemap.base.exception.*;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.RandomAccessFile;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 
-public class DataBase {
+public class DBaseTableChunk {
 
-    private static String encoding = "UTF-8";
-    public Path dBasePath;
-    public Map<String, String> dBase;
-    public DataBase(String name) throws Exception {
+    private static final String DIR_EXTENSION = "UTF-8";
+    private Path dBasePath;
+    private Map<String, String> dBase;
+
+    public DBaseTableChunk(String name) throws Exception {
         dBasePath = Paths.get(name);
         dBase = new HashMap<>();
         File file = new File(name);
@@ -73,12 +69,12 @@ public class DataBase {
         }
     }
 
-    private void writeDbToFile(final RandomAccessFile dbFile) throws Exception {
+    private void writeDbToFile(final RandomAccessFile dbFile) throws IOException {
         dbFile.setLength(0);
         Set<String> keys = dBase.keySet();
         List<Integer> offsetsPos = new LinkedList<Integer>();
         for (String currentKey : keys) {
-            dbFile.write(currentKey.getBytes("UTF-8"));
+            dbFile.write(currentKey.getBytes(DIR_EXTENSION));
             dbFile.write('\0');
             offsetsPos.add((int) dbFile.getFilePointer());
             dbFile.writeInt(0);
@@ -86,7 +82,7 @@ public class DataBase {
         List<Integer> offsets = new LinkedList<Integer>();
         for (String currentKey : keys) {
             offsets.add((int) dbFile.getFilePointer());
-            dbFile.write(dBase.get(currentKey).getBytes("UTF-8"));
+            dbFile.write(dBase.get(currentKey).getBytes(DIR_EXTENSION));
         }
         Iterator<Integer> offIter = offsets.iterator();
         for (int offsetPos : offsetsPos) {
@@ -114,7 +110,7 @@ public class DataBase {
                 offsets.add(dbFile.readInt());
             }
             bytesCounter += 4;
-            keys.add(bytesBuffer.toString("UTF-8"));
+            keys.add(bytesBuffer.toString(DIR_EXTENSION));
             bytesBuffer.reset();
         } while (bytesCounter < firstOffset);
         offsets.add((int) dbFile.length());
@@ -125,7 +121,7 @@ public class DataBase {
                 bytesCounter++;
             }
             if (bytesBuffer.size() > 0) {
-                put(keyIter.next(), bytesBuffer.toString(encoding));
+                put(keyIter.next(), bytesBuffer.toString(DIR_EXTENSION));
                 bytesBuffer.reset();
             } else {
                 throw new Exception();
@@ -134,10 +130,10 @@ public class DataBase {
         bytesBuffer.close();
     }
 
-    public void close() throws Exception {
+    public void close() throws IOException {
         try (RandomAccessFile dbFile = new RandomAccessFile(dBasePath.toString(), "rw")) {
             writeDbToFile(dbFile);
-        } catch (Exception e) {
+        } catch (FileNotFoundException e) {
             throw new WriteToFileException();
         }
     }

@@ -10,10 +10,10 @@ public class Get extends ParentCommand {
 
     @Override
     public void run() {
-        if (state.usingTable == null) {
+        if (state.getUsingTable() == null) {
             System.out.println("no table");
         } else {
-            String result = state.usingTable.get(key);
+            String result = state.getUsingTable().get(key);
             if (result == null) {
                 System.out.println("not found");
             } else {

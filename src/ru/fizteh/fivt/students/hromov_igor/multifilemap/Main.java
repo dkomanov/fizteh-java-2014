@@ -4,7 +4,8 @@ import ru.fizteh.fivt.students.hromov_igor.multifilemap.base.DBProvider;
 import ru.fizteh.fivt.students.hromov_igor.multifilemap.base.DBProviderFactory;
 import ru.fizteh.fivt.students.hromov_igor.multifilemap.base.DBaseTable;
 import ru.fizteh.fivt.students.hromov_igor.multifilemap.commands.*;
-import ru.fizteh.fivt.students.hromov_igor.multifilemap.interpreter.BatchParser;
+import ru.fizteh.fivt.students.hromov_igor.multifilemap.interpreter.BaseCommand;
+import ru.fizteh.fivt.students.hromov_igor.multifilemap.interpreter.BatchInterpreter;
 import ru.fizteh.fivt.students.hromov_igor.multifilemap.interpreter.PackageParser;
 
 import java.util.HashMap;
@@ -16,7 +17,7 @@ public class Main {
     try {
         String path = System.getProperty("fizteh.db.dir");
         if (path == null) {
-            throw new IllegalArgumentException("Can't open directory");
+            System.err.print("Can't open directory");
         }
 
         DBProviderFactory factory = new DBProviderFactory();
@@ -25,7 +26,7 @@ public class Main {
         DBaseTable table = null;
         CommandState state = new CommandState(base, table);
 
-        HashMap<String, ParentCommand> listCommands = new HashMap<>();
+        HashMap<String, BaseCommand> listCommands = new HashMap<>();
         listCommands.put("create", new Create(state));
         listCommands.put("drop", new Drop(state));
         listCommands.put("use", new Use(state));
@@ -40,7 +41,7 @@ public class Main {
         listCommands.put("size", new Size(state));
 
         if (args.length == 0) {
-            BatchParser.run(listCommands);
+            BatchInterpreter.run(listCommands);
         } else {
             PackageParser.run(listCommands, args);
         }

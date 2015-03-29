@@ -8,10 +8,10 @@ public class List extends ParentCommand {
 
     @Override
     public void run() {
-        if (state.usingTable == null) {
+        if (state.getUsingTable() == null) {
             System.out.println("no table");
         } else {
-            System.out.println(String.join(", ", state.usingTable.list()));
+            System.out.println(String.join(", ", state.getUsingTable().list()));
         }
     }
 

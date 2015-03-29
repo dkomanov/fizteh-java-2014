@@ -11,10 +11,10 @@ public class Drop extends ParentCommand {
     @Override
     public void run() {
         try {
-            if (state.base.getTable(tableName) == state.usingTable) {
-                state.usingTable = null;
+            if (state.getBase().getTable(tableName) == state.getUsingTable()) {
+                state.setUsingTable(null);
             }
-            state.base.removeTable(tableName);
+            state.getBase().removeTable(tableName);
             System.out.println("dropped");
         } catch (IllegalStateException e) {
             System.out.println(tableName + " not exists");

@@ -13,7 +13,7 @@ public class ShowTables extends ParentCommand {
 
     @Override
     public void run() {
-        for (Map.Entry<String, DBaseTable> entry: state.base.entrySet()) {
+        for (Map.Entry<String, DBaseTable> entry: state.getBase().entrySet()) {
             String name = entry.getKey();
             int size = entry.getValue().size();
             System.out.println(name + " " + size);

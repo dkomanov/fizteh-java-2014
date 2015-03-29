@@ -24,4 +24,9 @@ public class DBProviderFactoryTest {
     public void createWithNullArgs() throws Exception {
         newFactory.create(null);
     }
+
+    @Test
+    public void createWithNotNull() throws Exception {
+        newFactory.create("fizteh.dir");
+    }
 }

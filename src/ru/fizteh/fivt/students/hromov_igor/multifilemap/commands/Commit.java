@@ -8,10 +8,10 @@ public class Commit extends ParentCommand {
 
     @Override
     public void run() {
-        if (state.usingTable == null) {
+        if (state.getUsingTable() == null) {
             System.out.println("no table");
         } else {
-            System.out.println(state.usingTable.commit());
+            System.out.println(state.getUsingTable().commit());
         }
     }
 

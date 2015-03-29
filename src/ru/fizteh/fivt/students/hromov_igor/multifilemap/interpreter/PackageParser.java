@@ -1,15 +1,16 @@
 package ru.fizteh.fivt.students.hromov_igor.multifilemap.interpreter;
 
-import ru.fizteh.fivt.students.hromov_igor.multifilemap.commands.ParentCommand;
+import ru.fizteh.fivt.students.hromov_igor.multifilemap.interpreter.exception.ExitCommandException;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 public class PackageParser {
 
-    public static void run(HashMap<String, ParentCommand> listCommands, String[] arg) {
+    public static void run(HashMap<String, BaseCommand> listCommands, String[] arg) {
         try {
-            ArrayList<String> current = new ArrayList<String>();
+            List<String> current = new ArrayList<String>();
             for (int i = 0; i < arg.length; ++i) {
                 current.clear();
                 while (i < arg.length) {
@@ -24,11 +25,13 @@ public class PackageParser {
                 if (current.size() == 0) {
                     return;
                 }
-                String[] commands = new String[current.size()];
-                commands = current.toArray(commands);
-                Parser.parseCommand(commands, listCommands);
+                String[] commands = current.toArray(new String[current.size()]);
+                if (commands[0].equals("show")) {
+                    commands[0] += "_" + commands[1];
+                }
+                Parser.parseAndExecute(commands, listCommands);
             }
-        } catch (IllegalMonitorStateException e) {
+        } catch (ExitCommandException e) {
             System.exit(0);
         } catch (IllegalArgumentException e) {
             System.err.print("Wrong arguments" + e);

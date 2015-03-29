@@ -14,10 +14,10 @@ public class Use extends ParentCommand {
     @Override
     public void run() {
 
-        if (state.base.getTable(tableName) == null) {
+        if (state.getBase().getTable(tableName) == null) {
             System.out.println(tableName + " not exists");
         } else {
-            state.usingTable = (DBaseTable) state.base.getTable(tableName);
+            state.setUsingTable((DBaseTable) state.getBase().getTable(tableName));
             System.out.println("using " + tableName);
         }
     }

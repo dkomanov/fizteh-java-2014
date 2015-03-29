@@ -1,6 +1,8 @@
 package ru.fizteh.fivt.students.hromov_igor.multifilemap.commands;
 
-public abstract class ParentCommand {
+import ru.fizteh.fivt.students.hromov_igor.multifilemap.interpreter.BaseCommand;
+
+public abstract class ParentCommand extends BaseCommand {
 
     public CommandState state;
 

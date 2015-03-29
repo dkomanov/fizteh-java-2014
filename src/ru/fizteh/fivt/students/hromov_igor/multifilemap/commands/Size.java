@@ -8,10 +8,10 @@ public class Size extends ParentCommand {
 
     @Override
     public void run() {
-        if (state.usingTable == null) {
+        if (state.getUsingTable() == null) {
             System.out.println("no table");
         } else {
-            System.out.println(state.usingTable.size());
+            System.out.println(state.getUsingTable().size());
         }
     }
 
