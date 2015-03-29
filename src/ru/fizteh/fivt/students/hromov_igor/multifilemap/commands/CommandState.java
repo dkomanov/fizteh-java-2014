@@ -18,6 +18,7 @@ public class CommandState {
     public void setUsingTable(DBaseTable dataBaseTable) {
         usingTable = dataBaseTable;
     }
+
     public CommandState(DBProvider b, DBaseTable table) {
         this.base = b;
         this.usingTable = table;

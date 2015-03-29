@@ -16,9 +16,6 @@ public class Parser {
 
             if (listCommands.containsKey(commands[0])) {
                 BaseCommand command = null;
-                if (commands[0].equals("show")) {
-                    commands[0] += "_" + commands[1];
-                }
                 command = listCommands.get(commands[0]);
                 command.putArguments(commands);
                 command.run();

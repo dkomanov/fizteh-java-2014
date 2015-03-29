@@ -30,7 +30,7 @@ public class Main {
         listCommands.put("create", new Create(state));
         listCommands.put("drop", new Drop(state));
         listCommands.put("use", new Use(state));
-        listCommands.put("show_tables", new ShowTables(state));
+        listCommands.put("show", new ShowTables(state));
         listCommands.put("put", new Put(state));
         listCommands.put("get", new Get(state));
         listCommands.put("remove", new Remove(state));
