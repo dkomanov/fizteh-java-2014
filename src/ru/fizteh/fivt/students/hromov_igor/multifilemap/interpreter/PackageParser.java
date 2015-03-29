@@ -29,7 +29,7 @@ public class PackageParser {
                 Parser.parseAndExecute(commands, listCommands);
             }
         } catch (ExitCommandException e) {
-            System.exit(0);
+            return;
         } catch (IllegalArgumentException e) {
             System.err.print("Wrong arguments" + e);
         }

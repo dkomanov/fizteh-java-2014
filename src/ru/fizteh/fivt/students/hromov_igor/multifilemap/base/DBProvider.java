@@ -24,7 +24,7 @@ public class DBProvider implements TableProvider {
 
 
 
-    private static void rm(String[] args) throws Exception {
+    private static void removeFolder(String[] args) throws Exception {
 
         try {
             File file = Paths.get(args[0]).normalize().toFile();
@@ -39,16 +39,16 @@ public class DBProvider implements TableProvider {
             }
             if (file.isFile()) {
                 if (!file.delete()) {
-                    throw new Exception("rm : unexpectable error");
+                    throw new Exception("Unexpectable error");
                 }
             } else {
                 if (!rmRec(file)) {
-                    throw new Exception("rm : unexpectable error");
+                    throw new Exception("Unexpectable error");
                 }
             }
 
         } catch (InvalidPathException e) {
-            throw new Exception("rm : cannot remove file : invelid character");
+            throw new Exception("rm : cannot remove file : invalid character");
         } catch (SecurityException e) {
             throw new Exception("rm : cannot remove file : access denied");
         }
@@ -154,7 +154,7 @@ public class DBProvider implements TableProvider {
                 throw new IllegalArgumentException("File not exists");
             } else {
                 Path newPath = path.resolve(name);
-                rm(new String[]{newPath.toString()});
+                removeFolder(new String[]{newPath.toString()});
                 tables.remove(name);
                 basicTables.remove(name);
             }
