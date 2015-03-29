@@ -2,8 +2,10 @@ package ru.fizteh.fivt.students.hromov_igor.multifilemap.base;
 
 import ru.fizteh.fivt.storage.strings.Table;
 import ru.fizteh.fivt.storage.strings.TableProvider;
-import ru.fizteh.fivt.students.hromov_igor.shell.cmd.Rm;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
@@ -20,6 +22,49 @@ public class DBProvider implements TableProvider {
     private Map<String, Table> basicTables;
     private static final String ILLEGAL_KEY_NAME = "Illegal name of key";
     private static final String ILLEGAL_TABLE_NAME = "Illegal name of table";
+
+
+
+    private static void rm(String[] args) throws Exception {
+
+        try {
+            File file = Paths.get(args[0]).normalize().toFile();
+            if (!file.isAbsolute()) {
+                file = Paths
+                        .get(System.getProperty("fizteh.db.dir"),
+                                args[0]).normalize().toFile();
+            }
+            if (args[1].isEmpty() || !file.exists()) {
+                throw new Exception(
+                        "rm : cannot remove : No such file or directory");
+            }
+            if (file.isFile()) {
+                if (!file.delete()) {
+                    throw new Exception("rm : unexpectable error");
+                }
+            } else {
+                if (!rmRec(file)) {
+                    throw new Exception("rm : unexpectable error");
+                }
+            }
+
+        } catch (InvalidPathException e) {
+            throw new Exception("rm : cannot remove file : invelid character");
+        } catch (SecurityException e) {
+            throw new Exception("rm : cannot remove file : access denied");
+        }
+    }
+
+    private static boolean rmRec(File file) throws IOException {
+        if (file.isDirectory()) {
+            for (File f : file.listFiles()) {
+                if (!rmRec(f)) {
+                    return false;
+                }
+            }
+        }
+        return file.delete();
+    }
 
 
     public DBProvider(String dir) {
@@ -105,11 +150,11 @@ public class DBProvider implements TableProvider {
                 } else {
                     throw new IllegalArgumentException("File already exists");
                 }
-            } catch (Exception e) {
+            } catch (RuntimeException e) {
                 throw new IllegalArgumentException("Illegal table name", e);
             }
             return basicTables.get(name);
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             throw new IllegalArgumentException(ILLEGAL_KEY_NAME, e);
         }
     }
@@ -127,7 +172,7 @@ public class DBProvider implements TableProvider {
                 throw new IllegalArgumentException("File not exists");
             } else {
                 Path newPath = path.resolve(name);
-                Rm.run(new String[]{"rm", "-r", newPath.toString()});
+                rm(new String[]{newPath.toString()});
                 tables.remove(name);
                 basicTables.remove(name);
             }

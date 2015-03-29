@@ -1,8 +1,7 @@
 package ru.fizteh.fivt.students.hromov_igor.multifilemap.base;
 
 import ru.fizteh.fivt.storage.strings.Table;
-import ru.fizteh.fivt.students.hromov_igor.multifilemap.base.exception.*;
-
+import ru.fizteh.fivt.students.hromov_igor.multifilemap.base.exception.DirCreateException;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -145,13 +144,13 @@ public class DBaseTable implements Table {
                         try {
                             pathFile.toFile().createNewFile();
                         } catch (Exception e) {
-                            throw new IllegalArgumentException("Can't create file");
+                            throw new RuntimeException("Can't create file", e);
                         }
                     }
                     tableDateBase[place.getDirectoryIndex()][place.getFileIndex()] =
                             new DBaseTableChunk(pathFile.toString());
                 } catch (Exception e) {
-                    throw new IllegalArgumentException("File doesn't exist");
+                    throw new RuntimeException("File doesn't exist");
                 }
             }
             try {
