@@ -13,9 +13,9 @@ class DirectoryAndFileDescriptor {
     private int directoryIndex;
     private int fileIndex;
 
-    DirectoryAndFileDescriptor(int b, int size) {
-        this.directoryIndex = b % size;
-        this.fileIndex = b / size % size;
+    DirectoryAndFileDescriptor(int bytes, int size) {
+        this.directoryIndex = bytes % size;
+        this.fileIndex = bytes / size % size;
     }
 
 
@@ -126,9 +126,9 @@ public class DBaseTable implements Table {
             DirectoryAndFileDescriptor place = new DirectoryAndFileDescriptor(pair.getKey().getBytes()[0], SIZE);
 
             if (tableDateBase[place.getDirectoryIndex()][place.getFileIndex()] == null) {
-                String s = String.valueOf(place.getDirectoryIndex()).concat(dirExpansion);
+                String dirName = String.valueOf(place.getDirectoryIndex()).concat(dirExpansion);
                 Path pathDir = path;
-                pathDir = pathDir.resolve(s);
+                pathDir = pathDir.resolve(dirName);
                 if (!pathDir.toFile().exists()) {
                     try {
                         pathDir.toFile().mkdir();
@@ -137,8 +137,8 @@ public class DBaseTable implements Table {
                     }
                 }
 
-                s = String.valueOf(place.getFileIndex()).concat(fileExpansion);
-                Path pathFile = pathDir.resolve(s);
+                String fileName = String.valueOf(place.getFileIndex()).concat(fileExpansion);
+                Path pathFile = pathDir.resolve(fileName);
                 try {
                     if (!pathFile.toFile().exists()) {
                         try {
