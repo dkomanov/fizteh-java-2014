@@ -13,9 +13,9 @@ class DirectoryAndFileDescriptor {
     private int directoryIndex;
     private int fileIndex;
 
-    DirectoryAndFileDescriptor(int bytes, int size) {
-        this.directoryIndex = bytes % size;
-        this.fileIndex = bytes / size % size;
+    DirectoryAndFileDescriptor(int bytes) {
+        this.directoryIndex = bytes % DBaseTable.SIZE;
+        this.fileIndex = bytes / DBaseTable.SIZE % DBaseTable.SIZE;
     }
 
 
@@ -31,7 +31,7 @@ class DirectoryAndFileDescriptor {
 
 public class DBaseTable implements Table {
 
-    static final int SIZE = 16;
+    protected static final int SIZE = 16;
     private String tableName;
     private Path path;
     private DBaseTableChunk[][] tableDateBase;
@@ -120,7 +120,7 @@ public class DBaseTable implements Table {
             return 0;
          }
         for (Entry<String, String> pair : puted.entrySet()) {
-            DirectoryAndFileDescriptor place = new DirectoryAndFileDescriptor(pair.getKey().getBytes()[0], SIZE);
+            DirectoryAndFileDescriptor place = new DirectoryAndFileDescriptor(pair.getKey().getBytes()[0]);
 
             if (tableDateBase[place.getDirectoryIndex()][place.getFileIndex()] == null) {
                 String dirName = String.valueOf(place.getDirectoryIndex()).concat(DBProvider.DIR_EXTENTION);
@@ -164,7 +164,7 @@ public class DBaseTable implements Table {
         int size = puted.size();
         puted.clear();
         for (String key : removed) {
-            DirectoryAndFileDescriptor place = new DirectoryAndFileDescriptor(key.getBytes()[0], SIZE);
+            DirectoryAndFileDescriptor place = new DirectoryAndFileDescriptor(key.getBytes()[0]);
             tableDateBase[place.getDirectoryIndex()][place.getFileIndex()].remove(key);
             keys.remove(key);
         }

@@ -2,10 +2,9 @@ package ru.fizteh.fivt.students.hromov_igor.multifilemap.base;
 
 import ru.fizteh.fivt.storage.strings.Table;
 import ru.fizteh.fivt.storage.strings.TableProvider;
+import ru.fizteh.fivt.students.hromov_igor.multifilemap.base.exception.RemoveFolderException;
 
 import java.io.File;
-import java.io.IOException;
-import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
@@ -17,44 +16,38 @@ public class DBProvider implements TableProvider {
 
     protected static final String DIR_EXTENTION = ".dir";
     protected static final String FILE_EXTENTION = ".dat";
-    private Path path;
+    private static Path path;
     private Map<String, DBaseTable> tables;
     private Map<String, Table> basicTables;
     private static final String ILLEGAL_NAME = "Illegal name";
 
 
 
-    private static void removeFolder(String[] args) throws Exception {
+    private static void removeFolder(String removeName) throws RemoveFolderException {
 
         try {
-            File file = Paths.get(args[0]).normalize().toFile();
+            File file = Paths.get(removeName).normalize().toFile();
             if (!file.isAbsolute()) {
-                file = Paths
-                        .get(System.getProperty("fizteh.db.dir"),
-                                args[0]).normalize().toFile();
+                file = Paths.get(path.toString(), removeName).normalize().toFile();
             }
-            if (args[1].isEmpty() || !file.exists()) {
-                throw new Exception(
-                        "rm : cannot remove : No such file or directory");
+            if (!file.exists()) {
+                throw new RemoveFolderException();
             }
             if (file.isFile()) {
                 if (!file.delete()) {
-                    throw new Exception("Unexpectable error");
+                    throw new RemoveFolderException();
                 }
             } else {
                 if (!rmRec(file)) {
-                    throw new Exception("Unexpectable error");
+                    throw new RemoveFolderException();
                 }
             }
-
-        } catch (InvalidPathException e) {
-            throw new Exception("rm : cannot remove file : invalid character");
         } catch (SecurityException e) {
-            throw new Exception("rm : cannot remove file : access denied");
+            throw new RemoveFolderException(e);
         }
     }
 
-    private static boolean rmRec(File file) throws IOException {
+    private static boolean rmRec(File file) {
         if (file.isDirectory()) {
             for (File f : file.listFiles()) {
                 if (!rmRec(f)) {
@@ -128,7 +121,6 @@ public class DBProvider implements TableProvider {
             }
             if (!tables.containsKey(name)) {
                 tables.put(name, new DBaseTable(name, path));
-                tables.put(name, new DBaseTable(name, path));
                 basicTables.put(name, new DBaseTable(tables.get(name)));
                 Path newPath = path.resolve(name);
                 newPath.toFile().mkdir();
@@ -146,20 +138,16 @@ public class DBProvider implements TableProvider {
         if (!basicTables.containsKey(name)) {
             throw new IllegalArgumentException(ILLEGAL_NAME);
         }
-        try {
-            if (name == null) {
-                throw new IllegalArgumentException();
-            }
-            if (!tables.containsKey(name)) {
-                throw new IllegalArgumentException("File not exists");
-            } else {
-                Path newPath = path.resolve(name);
-                removeFolder(new String[]{newPath.toString()});
-                tables.remove(name);
-                basicTables.remove(name);
-            }
-        } catch (Exception e) {
-            throw new IllegalArgumentException(ILLEGAL_NAME, e);
+        if (name == null) {
+            throw new IllegalArgumentException();
+        }
+        if (!tables.containsKey(name)) {
+            throw new IllegalArgumentException("File not exists");
+        } else {
+            Path newPath = path.resolve(name);
+            removeFolder(newPath.toString());
+            tables.remove(name);
+            basicTables.remove(name);
         }
     }
 
